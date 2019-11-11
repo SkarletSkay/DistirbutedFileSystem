@@ -2,7 +2,7 @@ import os
 
 from flask import Flask, request, abort, jsonify, send_from_directory
 
-UPLOAD_DIRECTORY = "/home/alex/PycharmProjects/Upload"
+UPLOAD_DIRECTORY = "/home/kor1999/PycharmProjects/Upload"
 
 if not os.path.exists(UPLOAD_DIRECTORY):
     os.makedirs(UPLOAD_DIRECTORY)
@@ -29,8 +29,10 @@ def list_files():
 @api.route("/files/<path:path>")
 def get_file(path):
     """Download a file."""
-    return send_from_directory(UPLOAD_DIRECTORY, path, as_attachment=True)
-
+    try:
+        return send_from_directory(UPLOAD_DIRECTORY, path, as_attachment=True)
+    except FileNotFoundError:
+        abort(404)
 
 @api.route("/files/<filename>", methods=["POST"])
 def post_file(filename):

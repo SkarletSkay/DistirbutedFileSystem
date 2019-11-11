@@ -1,15 +1,31 @@
+import os
+
+base_dir = "./storage"
+sub_dir = ""
+
 
 # Initialize the client storage on a new system, should remove any existing file in the dfs root directory and return
 # available size.
 def initialize():
+    path = base_dir
+
+    try:
+        os.mkdir(path)
+    except OSError:
+        print("Creation of the directory %s failed" % path)
+        return -1
+    else:
+        print("Successfully created the directory %s " % path)
+        return 0
     # Get files and directories
     # Delete it all
-    return 1
 
 
 # File create. Should allow to create a new empty file.
 def file_create(file_name):
     # create(file_name)
+    f = open(base_dir + sub_dir + "/" + file_name, "w+")
+    f.close()
     print("File created", file_name)
     return 1
 
@@ -29,6 +45,7 @@ def file_write(file):
 # File delete. Should allow to delete any file from DFS
 def file_delete(file_name):
     # delete(file_name)
+    os.remove(base_dir + sub_dir + "/" + file_name)
     return 1
 
 
@@ -95,6 +112,10 @@ def command_recognition(comm):
     if comm == "createf":
         return 0
     if comm == "init":
+        if initialize() == 1:
+            print("Successful!")
+        else:
+            print("Something goes wrong")
         return 0
     if comm == "ls":
         return 0

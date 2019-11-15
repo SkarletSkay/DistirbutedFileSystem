@@ -1,25 +1,18 @@
 import os
+import requests
 
-base_dir = "./storage"
-# TODO: replace ./storage on ~ when aws
-sub_dir = ""
-
+base_dir = 'storage' # TODO: replace ./storage on ~ when aws
+sub_dir = ''
+cur_path = base_dir
+ns_ip = '0.0.0.0:5000' # TODO: change to real IP of name server
 
 # Initialize the client storage on a new system, should remove any existing file in the dfs root directory and return
 # available size.
-def initialize():
+def initialize(): # TODO: add returning of size of storage
     path = base_dir
-
-    try:
-        os.mkdir(path)
-    except OSError:
-        print("Creation of the directory %s failed" % path)
-        return -1
-    else:
-        print("Successfully created the directory %s " % path)
-        return 0
-    # Get files and directories
-    # Delete it all
+    result = requests.get(ns_ip + '/init')
+    print(result)
+    return 1
 
 
 # File create. Should allow to create a new empty file.
@@ -82,14 +75,50 @@ def read_directory(dir_name):
 
 # Make directory. Should allow to create a new directory.
 def make_directory(dir_name):
-    # make_dir(dir_name)
+    global cur_path
+    result = requests.post(ns_ip + '/mkdir ' + cur_path + ',' + dir_name) # TODO: создать cur_path
+    print(result)
     return 1
 
 
 # Delete directory. Should allow to delete directory. If the directory contains files the system should ask for
 # confirmation from the user before deletion.
 def delete_directory(dir_name):
-    # delete(dir_name)
+    global cur_path
+    result = requests.post(ns_ip + '/rmdir ' + cur_path + ',' + dir_name) # TODO: создать cur_path
+    print(result)
+    return 1
+
+
+def ls():
+    global cur_path
+    result = requests.post(ns_ip + '/ls ' + cur_path)
+    print(result)
+    return 1
+
+
+def cd_dotdot():
+    global cur_path
+    if (cur_path == base_dir):
+        return 1
+    else:
+        path_arr = cur_path.split('@')
+        del path_arr[-1]
+        cur_path = '@'.join(path_arr)
+        return 1
+
+def cd_empty():
+    global cur_path
+    cur_path = base_dir
+    return 1
+
+
+def cd_dir_name(dir_name):
+    global cur_path
+    result = requests.post(ns_ip + '/cd ' + cur_path + ',' + dir_name)
+    print(result)
+    if result == 200:
+        cur_path = cur_path + '@' + dir_name
     return 1
 
 
@@ -119,15 +148,26 @@ def command_recognition(comm):
             print("Something goes wrong")
         return 0
     if comm == "ls":
+        ls()
         return 0
 
     slt_comm = comm.split(" ")
+    if slt_comm[0] == 'cd' and len(slt_comm) == 1 :
+        cd_empty()
+    elif slt_comm[0] == 'cd' and slt_comm[1] == '':
+        cd_empty()
+    elif slt_comm[0] == 'cd..':
+        cd_dotdot()
+    elif slt_comm[0] == 'cd' and len(slt_comm) > 1 :
+        cd_dir_name(slt_comm[1])
+
     if slt_comm[0] == "createf":
         if len(slt_comm) != 2:
             print("Wrong parameters")
         else:
             file_create(slt_comm[1])
         return 0
+
     if slt_comm[0] == "readf":
         if len(slt_comm) != 2:
             print("Wrong parameters")

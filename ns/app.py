@@ -60,7 +60,17 @@ def rmdir(cur_path, dir_name):
 def ls(cur_path):
     file = open(f'{CONFIGURE_PATH}{cur_path}.txt')
     files = file.read().split('\n')
+    file.close()
     return str(files[:len(files) - 1])
+
+
+@api.route('/cd <cur_path>,<dir_name>', methods=['POST'])
+def cd(cur_path, dir_path):
+    dirs = os.listdir(CONFIGURE_PATH)
+    if dir_path in dirs:
+        return 200
+    else:
+        return 'No such file or directory'
 
 
 if __name__ == "__main__":

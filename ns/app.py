@@ -56,5 +56,12 @@ def rmdir(cur_path, dir_name):
         return 'Error: no such directory'
 
 
+@api.route('/ls <cur_path>', methods=['POST'])
+def ls(cur_path):
+    file = open(f'{CONFIGURE_PATH}{cur_path}.txt')
+    files = file.read().split('\n')
+    return str(files[:len(files) - 1])
+
+
 if __name__ == "__main__":
     api.run(host='0.0.0.0', debug=True, port=5000)

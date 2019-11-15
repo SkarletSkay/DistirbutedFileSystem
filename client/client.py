@@ -1,6 +1,7 @@
 import os
 
 base_dir = "./storage"
+# TODO: replace ./storage on ~ when aws
 sub_dir = ""
 
 

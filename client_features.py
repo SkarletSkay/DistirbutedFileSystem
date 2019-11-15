@@ -2,7 +2,7 @@ import os
 
 from flask import Flask, request, abort, jsonify, send_from_directory
 
-UPLOAD_DIRECTORY = "/home/kor1999/PycharmProjects/Upload"
+UPLOAD_DIRECTORY = "."
 
 if not os.path.exists(UPLOAD_DIRECTORY):
     os.makedirs(UPLOAD_DIRECTORY)
@@ -12,7 +12,7 @@ api = Flask(__name__)
 
 @api.route('/')
 def hello_world():
-    return 'Hello World!'
+    return 'Welcome to Super DFS!'
 
 
 @api.route("/files")
@@ -50,4 +50,4 @@ def post_file(filename):
 
 
 if __name__ == "__main__":
-    api.run(host='0.0.0.0', debug=True, port=5000)
+    api.run(host='0.0.0.0', debug=False, port=5000)

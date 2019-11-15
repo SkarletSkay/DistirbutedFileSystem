@@ -46,9 +46,11 @@ def mkdir(cur_path, dir_name):
 @api.route('/rmdir <cur_path>,<dir_name>', methods=['POST'])
 def rmdir(cur_path, dir_name):
     dirs = os.listdir(CONFIGURE_PATH)
+    subdirs = [dir for dir in dirs if f'{cur_path}@{dir_name}' in dir]
 
     if f'{cur_path}@{dir_name}.txt' in dirs:
-        os.remove(f'{CONFIGURE_PATH}{cur_path}@{dir_name}.txt')
+        for subdir in subdirs:
+            os.remove(f'{CONFIGURE_PATH}{subdir}')
         return 'Success remove'
     else:
         return 'Error: no such directory'

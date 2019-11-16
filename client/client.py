@@ -4,7 +4,7 @@ import requests
 base_dir = 'storage' # TODO: replace ./storage on ~ when aws
 sub_dir = ''
 cur_path = base_dir
-ns_ip = '0.0.0.0:5000' # TODO: change to real IP of name server
+ns_ip = 'http://0.0.0.0:5000' # TODO: change to real IP of name server
 
 # Initialize the client storage on a new system, should remove any existing file in the dfs root directory and return
 # available size.
@@ -154,13 +154,16 @@ def command_recognition(comm):
     slt_comm = comm.split(" ")
     if slt_comm[0] == 'cd' and len(slt_comm) == 1 :
         cd_empty()
+        return 0
     elif slt_comm[0] == 'cd' and slt_comm[1] == '':
         cd_empty()
+        return 0
     elif slt_comm[0] == 'cd..':
         cd_dotdot()
+        return 0
     elif slt_comm[0] == 'cd' and len(slt_comm) > 1 :
         cd_dir_name(slt_comm[1])
-
+        return 0
     if slt_comm[0] == "createf":
         if len(slt_comm) != 2:
             print("Wrong parameters")

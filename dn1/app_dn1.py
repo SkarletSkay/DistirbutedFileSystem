@@ -12,9 +12,9 @@ if not os.path.exists(UPLOAD_DIRECTORY):
 api = Flask(__name__)
 
 
-@api.route('/')
-def hello_world():
-    return 'Welcome to Super DFS!'
+@api.route('/', methods=['GET'])
+def home():
+    return f"Welcome to Super DFS! Here files in CONFIGURE_PATH: {os.listdir()}"
 
 
 @api.route('/files')

@@ -89,7 +89,8 @@ def ls(cur_path):
 def cd(cur_path):
     dirs = os.listdir(CONFIGURE_PATH)
     if cur_path in dirs:
-        return 200
+        cur_path_ = str(cur_path).replace('@', '/')
+        return f'Now you are in {cur_path_}'
     else:
         return 'No such file or directory'
 

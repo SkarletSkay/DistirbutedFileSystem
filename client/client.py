@@ -4,7 +4,8 @@ import requests
 base_dir = 'storage' # TODO: replace ./storage on ~ when aws
 sub_dir = ''
 cur_path = base_dir
-ns_ip = 'http://3.135.19.135:5000' # TODO: change to real IP of name server
+#ns_ip = 'http://3.135.19.135:5000'
+ns_ip = 'http://0.0.0.0:5000'
 
 # Initialize the client storage on a new system, should remove any existing file in the dfs root directory and return
 # available size.
@@ -76,8 +77,8 @@ def read_directory(dir_name):
 # Make directory. Should allow to create a new directory.
 def make_directory(dir_name):
     global cur_path
-    result = requests.post(ns_ip + '/mkdir ' + cur_path + ',' + dir_name) # TODO: создать cur_path
-    print(result.content.decode('utf-8'))
+    result = requests.post(ns_ip + '/mkdir ' + cur_path + ',' + dir_name)
+    print(result.content.decode('utf-8')) #TODO надо пичинить вывод, а то там собаки вылезают вместо тэгов
     return 1
 
 
@@ -85,7 +86,7 @@ def make_directory(dir_name):
 # confirmation from the user before deletion.
 def delete_directory(dir_name):
     global cur_path
-    result = requests.post(ns_ip + '/rmdir ' + cur_path + ',' + dir_name) # TODO: создать cur_path
+    result = requests.post(ns_ip + '/rmdir ' + cur_path + ',' + dir_name)
     print(result.content.decode('utf-8'))
     return 1
 
@@ -115,10 +116,10 @@ def cd_empty():
 
 def cd_dir_name(dir_name):
     global cur_path
-    result = requests.post(ns_ip + '/cd ' + cur_path + ',' + dir_name)
-    print(result)
-    if result == 200:
+    result = requests.post(ns_ip + '/cd ' + cur_path + '@' + dir_name + '.txt')
+    if result.content != 'No such file or directory':
         cur_path = cur_path + '@' + dir_name
+    print(result.content.decode('utf-8'))
     return 1
 
 

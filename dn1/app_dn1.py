@@ -40,7 +40,7 @@ def get_file(path):
 @api.route('/createf <dir_name>,<filename>', methods=["POST"])
 def post_file(dir_name, filename):
     """Upload a file."""
-    file = open(filename, 'wb')
+    file = open(f'{dir_name}@{filename}', 'wb')
     file.write(request.data)
     file.close()
     requests.post(f'{NAMESERVER_IP}/add_file {dir_name},{filename}')

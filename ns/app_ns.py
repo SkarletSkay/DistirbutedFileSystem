@@ -1,6 +1,7 @@
 import os
 import shutil
 from flask import Flask, request, abort, jsonify, send_from_directory
+import re
 
 api = Flask(__name__)
 
@@ -51,6 +52,19 @@ def rmdir(cur_path, dir_name):
     if f'{cur_path}@{dir_name}.txt' in dirs:
         for subdir in subdirs:
             os.remove(f'{CONFIGURE_PATH}{subdir}')
+
+        with open(f'{CONFIGURE_PATH}{cur_path}.txt') as f:
+            lines = f.readlines()
+        f.close()
+
+        pattern = re.compile(re.escape(dir_name))
+        with open(f'{CONFIGURE_PATH}{cur_path}.txt', 'w') as f:
+            for line in lines:
+                result = pattern.search(line)
+                if result is None:
+                    f.write(line)
+        f.close()
+
         return 'Success remove'
     else:
         return 'Error: no such directory'

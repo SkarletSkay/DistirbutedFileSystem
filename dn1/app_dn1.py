@@ -1,8 +1,10 @@
 import os
 
+import requests
 from flask import Flask, request, abort, jsonify, send_from_directory
 
 UPLOAD_DIRECTORY = '.'
+NAMESERVER_IP = 'http://3.135.19.135:5000'
 
 if not os.path.exists(UPLOAD_DIRECTORY):
     os.makedirs(UPLOAD_DIRECTORY)
@@ -35,12 +37,13 @@ def get_file(path):
         abort(404)
 
 
-@api.route('/createf <filename>', methods=["POST"])
-def post_file(filename):
+@api.route('/createf <dir_name>,<filename>', methods=["POST"])
+def post_file(dir_name, filename):
     """Upload a file."""
     file = open(filename, 'wb')
     file.write(request.data)
     file.close()
+    requests.post(f'{NAMESERVER_IP}/add_file {dir_name},{filename}')
     # Return 201 CREATED
     return "Successed uploaded"
 

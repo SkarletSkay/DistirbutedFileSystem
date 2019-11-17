@@ -110,6 +110,12 @@ def ping():
 
     return str(AVAILABLE_HOSTS)
 
+@api.route('/add_file <dir_name>,<file_name>', methods=['POST'])
+def add_file(dir_name, file_name):
+    file = open(f'{CONFIGURE_PATH}{dir_name}.txt', 'a')
+    file.write(file_name+'\n')
+    file.close()
+    return 'Success add file'
 
 if __name__ == "__main__":
     api.run(host='0.0.0.0', debug=True, port=5000)

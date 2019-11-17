@@ -2,7 +2,7 @@ import os
 
 from flask import Flask, request, abort, jsonify, send_from_directory
 
-UPLOAD_DIRECTORY = "."
+UPLOAD_DIRECTORY = '.'
 
 if not os.path.exists(UPLOAD_DIRECTORY):
     os.makedirs(UPLOAD_DIRECTORY)
@@ -15,7 +15,7 @@ def hello_world():
     return 'Welcome to Super DFS!'
 
 
-@api.route("/files")
+@api.route('/files')
 def list_files():
     """Endpoint to list files on the server."""
     files = []
@@ -26,7 +26,7 @@ def list_files():
     return jsonify(files)
 
 
-@api.route("/files/<path:path>")
+@api.route('/files/<path:path>')
 def get_file(path):
     """Download a file."""
     try:
@@ -34,19 +34,15 @@ def get_file(path):
     except FileNotFoundError:
         abort(404)
 
-@api.route("/files/<filename>", methods=["POST"])
+
+@api.route('/createf <filename>', methods=["POST"])
 def post_file(filename):
     """Upload a file."""
-
-    if "/" in filename:
-        # Return 400 BAD REQUEST
-        abort(400, "no subdirectories directories allowed")
-
-    with open(os.path.join(UPLOAD_DIRECTORY, filename), "wb") as fp:
-        fp.write(request.data)
-
+    file = open(filename, 'wb')
+    file.write(request.data)
+    file.close()
     # Return 201 CREATED
-    return "", 201
+    return "Successed uploaded"
 
 
 if __name__ == "__main__":

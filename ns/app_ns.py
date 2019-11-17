@@ -6,10 +6,13 @@ import re
 api = Flask(__name__)
 
 CONFIGURE_PATH = './etc/'
+DATANODES_IP = ['3.134.253.161', '18.219.181.76']
+
 
 @api.route('/', methods=['GET'])
 def home():
     return f"Welcome to Super DFS! Here files in CONFIGURE_PATH: {os.listdir(CONFIGURE_PATH)}"
+
 
 @api.route('/init', methods=['GET'])
 def init():
@@ -19,8 +22,8 @@ def init():
 
         file = open(CONFIGURE_PATH + 'storage.txt', 'w+')
         file.close()
-        total_storage , used_storage , free_storage = shutil.disk_usage('/')
-        return str("Success creation. You can use: %d GB" % (free_storage // (2**30)))
+        total_storage, used_storage, free_storage = shutil.disk_usage('/')
+        return str("Success recreation. You can use: %d GB" % (free_storage // (2 ** 30)))
     else:
         os.mkdir(CONFIGURE_PATH)
 
@@ -28,6 +31,7 @@ def init():
         file.close()
         total_storage, used_storage, free_storage = shutil.disk_usage('/')
         return str("Success creation. You can use: %d GB" % (free_storage // (2 ** 30)))
+
 
 @api.route('/mkdir <cur_path>,<dir_name>', methods=['POST'])
 def mkdir(cur_path, dir_name):
@@ -81,13 +85,29 @@ def ls(cur_path):
     return str(files[:len(files) - 1])
 
 
-@api.route('/cd <cur_path>,<dir_name>', methods=['POST'])
-def cd(cur_path, dir_path):
+@api.route('/cd <cur_path>', methods=['POST'])
+def cd(cur_path):
     dirs = os.listdir(CONFIGURE_PATH)
-    if dir_path in dirs:
+    if cur_path in dirs:
         return 200
     else:
         return 'No such file or directory'
+
+
+@api.route('/ping', methods=['GET'])
+def ping():
+    AVAILABLE_HOSTS = []
+    for host in DATANODES_IP:
+        hostname = host
+        response = os.system("ping -c 1 " + hostname)
+        # and then check the response...
+        if response == 0:
+            AVAILABLE_HOSTS.append(f'http://{host}:5000')
+            pingstatus = "Network Active"
+        else:
+            pingstatus = "Network Error"
+
+    return str(AVAILABLE_HOSTS)
 
 
 if __name__ == "__main__":

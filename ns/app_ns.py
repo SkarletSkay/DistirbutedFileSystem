@@ -16,8 +16,8 @@ def init():
 
         file = open(CONFIGURE_PATH + 'storage.txt', 'w+')
         file.close()
-
-        return 'Success recreation'
+        total_storage , used_storage , free_storage = shutil.disk_usage('/')
+        return str("You can use: %d GB" % (free_storage // (2**30)))
     else:
         os.mkdir(CONFIGURE_PATH)
 

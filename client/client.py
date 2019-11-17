@@ -8,10 +8,10 @@ ns_ip = 'http://0.0.0.0:5000' # TODO: change to real IP of name server
 
 # Initialize the client storage on a new system, should remove any existing file in the dfs root directory and return
 # available size.
-def initialize(): # TODO: add returning of size of storage
+def initialize():
     path = base_dir
     result = requests.get(ns_ip + '/init')
-    print(result.content)
+    print(result.content.decode('utf-8'))
     return 1
 
 
@@ -77,7 +77,7 @@ def read_directory(dir_name):
 def make_directory(dir_name):
     global cur_path
     result = requests.post(ns_ip + '/mkdir ' + cur_path + ',' + dir_name) # TODO: создать cur_path
-    print(result.content)
+    print(result.content.decode('utf-8'))
     return 1
 
 
@@ -86,14 +86,14 @@ def make_directory(dir_name):
 def delete_directory(dir_name):
     global cur_path
     result = requests.post(ns_ip + '/rmdir ' + cur_path + ',' + dir_name) # TODO: создать cur_path
-    print(result.content)
+    print(result.content.decode('utf-8'))
     return 1
 
 
 def ls():
     global cur_path
     result = requests.post(ns_ip + '/ls ' + cur_path)
-    print(result.content)
+    print(result.content.decode('utf-8'))
     return 1
 
 
@@ -123,7 +123,7 @@ def cd_dir_name(dir_name):
 
 
 def command_recognition(comm):
-    
+
     if comm == "help":
         print("init - Initialization")
         print("createf fn.ext - Create file with name 'fn.ext'")

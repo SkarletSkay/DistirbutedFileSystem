@@ -21,7 +21,7 @@ def file_create(file_name):
     global cur_path
     byte_file = open(file_name, 'rb').read()
     file_name = file_name.split('/')[-1]
-    ds_ip_list_ = requests.get(ns_ip + '/ping').content.decode('utf-8')
+    ds_ip_list_ = requests.get(ns_ip + '/createf').content.decode('utf-8')
     ds_ip_list = ds_ip_list_.split(',')
     print(ds_ip_list)
     del ds_ip_list[-1]
@@ -33,7 +33,14 @@ def file_create(file_name):
 
 
 # File read. Should allow to read any file from DFS (download a file from the DFS to the Client side).
-def file_read(file_name):
+def file_read(file_path, file_name):
+    global cur_path
+    ds_ip_list_ = requests.post(ns_ip + '/readf ' + cur_path + ',' + file_name).content.decode('utf-8')
+    ds_ip_list = ds_ip_list_.split(',') #TODO: добавить проверку на наличие вообще файла
+    result = requests.post(ds_ip_list[0] + '/readf ' + cur_path + '@' + file_name)
+    file = open(file_path, 'wb')
+    file.write(result.content)
+    file.close()
 
     return 1
 
@@ -183,7 +190,7 @@ def command_recognition(comm):
         if len(slt_comm) != 2:
             print("Wrong parameters")
         else:
-            res = file_read(slt_comm[1])
+            res = file_read(slt_comm[1], slt_comm[2])
             if res == 1:
                 print("Success")
             else:

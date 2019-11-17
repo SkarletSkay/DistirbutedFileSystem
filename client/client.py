@@ -4,8 +4,8 @@ import requests
 base_dir = 'storage' # TODO: replace ./storage on ~ when aws
 sub_dir = ''
 cur_path = base_dir
-#ns_ip = 'http://3.135.19.135:5000'
-ns_ip = 'http://0.0.0.0:5000'
+ns_ip = 'http://3.135.19.135:5000'
+#ns_ip = 'http://0.0.0.0:5000'
 
 # Initialize the client storage on a new system, should remove any existing file in the dfs root directory and return
 # available size.
@@ -18,16 +18,19 @@ def initialize():
 
 # File create. Should allow to create a new empty file.
 def file_create(file_name):
-    # create(file_name)
-    f = open(base_dir + sub_dir + "/" + file_name, "w+")
-    f.close()
-    print("File created", file_name)
+    global cur_path
+    file_name = file_name.split('/')[-1]
+    byte_file = open(file_name, 'rb').read()
+    ds_ip_list = requests.get(ns_ip + '/ping')
+    for i in range(len(ds_ip_list)):
+        result = requests.post(ds_ip_list[i] + '/createf ' + cur_path + ',' + file_name, byte_file)
+        print(result)
     return 1
 
 
 # File read. Should allow to read any file from DFS (download a file from the DFS to the Client side).
 def file_read(file_name):
-    # get(file_name)
+
     return 1
 
 

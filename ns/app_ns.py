@@ -7,8 +7,11 @@ api = Flask(__name__)
 
 CONFIGURE_PATH = './etc/'
 
+@api.route('/', methods=['GET'])
+def home():
+    return f"Welcome to Super DFS! Here files in CONFIGURE_PATH: {os.listdir(CONFIGURE_PATH)}"
 
-@api.route("/init", methods=['GET'])
+@api.route('/init', methods=['GET'])
 def init():
     if os.path.exists(CONFIGURE_PATH):
         shutil.rmtree(CONFIGURE_PATH)
@@ -17,15 +20,14 @@ def init():
         file = open(CONFIGURE_PATH + 'storage.txt', 'w+')
         file.close()
         total_storage , used_storage , free_storage = shutil.disk_usage('/')
-        return str("You can use: %d GB" % (free_storage // (2**30)))
+        return str("Success creation. You can use: %d GB" % (free_storage // (2**30)))
     else:
         os.mkdir(CONFIGURE_PATH)
 
         file = open(CONFIGURE_PATH + "storage.txt", 'w+')
         file.close()
-
-        return 'Success creation'
-
+        total_storage, used_storage, free_storage = shutil.disk_usage('/')
+        return str("Success creation. You can use: %d GB" % (free_storage // (2 ** 30)))
 
 @api.route('/mkdir <cur_path>,<dir_name>', methods=['POST'])
 def mkdir(cur_path, dir_name):
@@ -57,6 +59,7 @@ def rmdir(cur_path, dir_name):
             lines = f.readlines()
         f.close()
 
+        # TODO: make up how to do better
         pattern = re.compile(re.escape(dir_name))
         with open(f'{CONFIGURE_PATH}{cur_path}.txt', 'w') as f:
             for line in lines:

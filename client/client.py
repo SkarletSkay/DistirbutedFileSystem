@@ -4,7 +4,7 @@ import requests
 base_dir = 'storage' # TODO: replace ./storage on ~ when aws
 sub_dir = ''
 cur_path = base_dir
-ns_ip = 'http://0.0.0.0:5000' # TODO: change to real IP of name server
+ns_ip = 'http://3.135.19.135:5000' # TODO: change to real IP of name server
 
 # Initialize the client storage on a new system, should remove any existing file in the dfs root directory and return
 # available size.

@@ -19,9 +19,13 @@ def initialize():
 # File create. Should allow to create a new empty file.
 def file_create(file_name):
     global cur_path
-    file_name = file_name.split('/')[-1]
     byte_file = open(file_name, 'rb').read()
-    ds_ip_list = requests.get(ns_ip + '/ping')
+    file_name = file_name.split('/')[-1]
+    ds_ip_list_ = requests.get(ns_ip + '/ping').content.decode('utf-8')
+    ds_ip_list = ds_ip_list_.split(',')
+    print(ds_ip_list)
+    del ds_ip_list[-1]
+    print(ds_ip_list)
     for i in range(len(ds_ip_list)):
         result = requests.post(ds_ip_list[i] + '/createf ' + cur_path + ',' + file_name, byte_file)
         print(result)

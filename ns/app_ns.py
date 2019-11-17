@@ -97,18 +97,18 @@ def cd(cur_path):
 
 @api.route('/ping', methods=['GET'])
 def ping():
-    AVAILABLE_HOSTS = []
+    AVAILABLE_HOSTS = ''
     for host in DATANODES_IP:
         hostname = host
         response = os.system("ping -c 1 " + hostname)
         # and then check the response...
         if response == 0:
-            AVAILABLE_HOSTS.append(f'http://{host}:5000')
+            AVAILABLE_HOSTS += (f'http://{host}:5000,')
             pingstatus = "Network Active"
         else:
             pingstatus = "Network Error"
 
-    return str(AVAILABLE_HOSTS)
+    return AVAILABLE_HOSTS
 
 @api.route('/add_file <dir_name>,<file_name>', methods=['POST'])
 def add_file(dir_name, file_name):

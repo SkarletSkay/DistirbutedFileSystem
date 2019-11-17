@@ -11,7 +11,7 @@ ns_ip = 'http://0.0.0.0:5000' # TODO: change to real IP of name server
 def initialize(): # TODO: add returning of size of storage
     path = base_dir
     result = requests.get(ns_ip + '/init')
-    print(result)
+    print(result.content)
     return 1
 
 
@@ -77,7 +77,7 @@ def read_directory(dir_name):
 def make_directory(dir_name):
     global cur_path
     result = requests.post(ns_ip + '/mkdir ' + cur_path + ',' + dir_name) # TODO: создать cur_path
-    print(result)
+    print(result.content)
     return 1
 
 
@@ -86,14 +86,14 @@ def make_directory(dir_name):
 def delete_directory(dir_name):
     global cur_path
     result = requests.post(ns_ip + '/rmdir ' + cur_path + ',' + dir_name) # TODO: создать cur_path
-    print(result)
+    print(result.content)
     return 1
 
 
 def ls():
     global cur_path
     result = requests.post(ns_ip + '/ls ' + cur_path)
-    print(result)
+    print(result.content)
     return 1
 
 
@@ -123,6 +123,7 @@ def cd_dir_name(dir_name):
 
 
 def command_recognition(comm):
+    
     if comm == "help":
         print("init - Initialization")
         print("createf fn.ext - Create file with name 'fn.ext'")
@@ -139,13 +140,11 @@ def command_recognition(comm):
         print("exit - Exit from program")
 
         return 0
+
     if comm == "createf":
         return 0
     if comm == "init":
-        if initialize() == 1:
-            print("Successful!")
-        else:
-            print("Something goes wrong")
+        initialize()
         return 0
     if comm == "ls":
         ls()
@@ -164,6 +163,7 @@ def command_recognition(comm):
     elif slt_comm[0] == 'cd' and len(slt_comm) > 1 :
         cd_dir_name(slt_comm[1])
         return 0
+
     if slt_comm[0] == "createf":
         if len(slt_comm) != 2:
             print("Wrong parameters")
@@ -182,6 +182,7 @@ def command_recognition(comm):
                 if res == 0:
                     print("File not found")
         return 0
+
     if slt_comm[0] == "writef":
         if len(slt_comm) != 2:
             print("Wrong parameters")
@@ -193,6 +194,7 @@ def command_recognition(comm):
                 if res == 0:
                     print("File not found")
         return 0
+
     if slt_comm[0] == "rmf":
         if len(slt_comm) != 2:
             print("Wrong parameters")
@@ -204,6 +206,7 @@ def command_recognition(comm):
                 if res == 0:
                     print("File not found")
         return 0
+
     if slt_comm[0] == "infof":
         if len(slt_comm) != 2:
             print("Wrong parameters")
@@ -215,6 +218,7 @@ def command_recognition(comm):
                 if res == 0:
                     print("File not found")
         return 0
+
     if slt_comm[0] == "copyf":
         if len(slt_comm) != 2:
             print("Wrong parameters")
@@ -226,6 +230,7 @@ def command_recognition(comm):
                 if res == 0:
                     print("File not found")
         return 0
+
     if slt_comm[0] == "mvf":
         if len(slt_comm) != 3:
             print("Wrong parameters")
@@ -237,13 +242,12 @@ def command_recognition(comm):
                 if res == 0:
                     print("File not found")
         return 0
+
     if slt_comm[0] == "mkdir":
         if len(slt_comm) != 2:
             print("Wrong parameters")
         else:
-            res = make_directory(slt_comm[1])
-            if res == 1:
-                print("Success")
+            make_directory(slt_comm[1])
         return 0
     if slt_comm[0] == "opendir":
         if len(slt_comm) != 2:
@@ -253,13 +257,12 @@ def command_recognition(comm):
             if res == 1:
                 print("Success")
         return 0
+
     if slt_comm[0] == "rmdir":
         if len(slt_comm) != 2:
             print("Wrong parameters")
         else:
-            res = delete_directory(slt_comm[1])
-            if res == 1:
-                print("Success")
+            delete_directory(slt_comm[1])
         return 0
     return -1
 

@@ -3,10 +3,11 @@ import shutil
 
 import requests
 from flask import Flask, request, abort, jsonify, send_from_directory
+import datetime
 
 NAMESERVER_IP = 'http://3.135.19.135:5000'
 
-CONFIGURE_PATH = './dn1_storage/'
+CONFIGURE_PATH = './storage/'
 api = Flask(__name__)
 
 
@@ -66,6 +67,18 @@ def remove_file(filename):
     except FileNotFoundError:
         return 'File not found', 404
     return 'Success remove file'
+
+
+@api.route('/info <filename>', methods=['POST'])
+def file_info(filename):
+    info = os.stat(f'{CONFIGURE_PATH}{filename}')
+    size = f'File size is {info[6]} bytes, '
+    access_time = f'Access time {datetime.datetime.fromtimestamp(info[7]).strftime("%m/%d/%Y, %H:%M:%S")}, '
+    modified_time = f'Modified time {datetime.datetime.fromtimestamp(info[8]).strftime("%m/%d/%Y, %H:%M:%S")}, '
+    last_change_time = f'Last change time {datetime.datetime.fromtimestamp(info[9]).strftime("%m/%d/%Y, %H:%M:%S")}, '
+    return f'{size}\n{access_time}\n{modified_time}\n{last_change_time}'
+
+    return datetime.datetime.fromtimestamp(info[7]).strftime("%m/%d/%Y, %H:%M:%S")
 
 
 if __name__ == "__main__":

@@ -29,10 +29,20 @@ def init():
     else:
         os.mkdir(CONFIGURE_PATH)
 
-        file = open(CONFIGURE_PATH + "storage.txt", 'w+')
-        file.close()
-        total_storage, used_storage, free_storage = shutil.disk_usage('/')
-        return str("Success creation. You can use: %d GB" % (free_storage // (2 ** 30)))
+    for host in DATANODES_IP:
+        hostname = host
+        response = os.system("ping -c 1 " + hostname)
+        # and then check the response...
+        if response == 0:
+            requests.get(f'{host}/init')
+            pingstatus = "Network Active"
+        else:
+            pingstatus = "Network Error"
+
+    file = open(CONFIGURE_PATH + "storage.txt", 'w+')
+    file.close()
+    total_storage, used_storage, free_storage = shutil.disk_usage('/')
+    return str("Success creation. You can use: %d GB" % (free_storage // (2 ** 30)))
 
 
 @api.route('/mkdir <cur_path>,<dir_name>', methods=['POST'])
@@ -92,7 +102,7 @@ def cd(cur_path):
     dirs = os.listdir(CONFIGURE_PATH)
     if cur_path in dirs:
         cur_path_ = str(cur_path).replace('@', '/')
-        return f'Now you are in {cur_path_}'
+        return f'Now you are in {cur_path_[0:-4]}'
     else:
         return 'No such file or directory'
 
@@ -115,6 +125,18 @@ def createf():
 
 @api.route('/add_file <dir_name>,<file_name>', methods=['POST'])
 def add_file(dir_name, file_name):
+    with open(f'{CONFIGURE_PATH}{dir_name}.txt') as f:
+        lines = f.readlines()
+    f.close()
+
+    pattern = re.compile(re.escape(file_name))
+    with open(f'{CONFIGURE_PATH}{dir_name}.txt', 'w') as f:
+        for line in lines:
+            result = pattern.search(line)
+            if result is None:
+                f.write(line)
+    f.close()
+
     file = open(f'{CONFIGURE_PATH}{dir_name}.txt', 'a')
     file.write(file_name + '\n')
     file.close()

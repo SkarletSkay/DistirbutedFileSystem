@@ -18,17 +18,17 @@ def initialize():
 
 # File create. Should allow to create a new empty file.
 def file_create(file_name):
-    global cur_path
-    byte_file = open(file_name, 'rb').read()
-    file_name = file_name.split('/')[-1]
-    ds_ip_list_ = requests.get(ns_ip + '/createf').content.decode('utf-8')
-    ds_ip_list = ds_ip_list_.split(',')
-    print(ds_ip_list)
-    del ds_ip_list[-1]
-    print(ds_ip_list)
-    for i in range(len(ds_ip_list)):
-        result = requests.post(ds_ip_list[i] + '/createf ' + cur_path + ',' + file_name, byte_file)
-        print(result)
+    # global cur_path
+    # byte_file = open(file_name, 'rb').read()
+    # file_name = file_name.split('/')[-1]
+    # ds_ip_list_ = requests.get(ns_ip + '/createf').content.decode('utf-8')
+    # ds_ip_list = ds_ip_list_.split(',')
+    # print(ds_ip_list)
+    # del ds_ip_list[-1]
+    # print(ds_ip_list)
+    # for i in range(len(ds_ip_list)):
+    #     result = requests.post(ds_ip_list[i] + '/createf ' + cur_path + ',' + file_name, byte_file)
+    #     print(result)
     return 1
 
 
@@ -48,9 +48,19 @@ def file_read(file_path, file_name):
 
 
 # File write. Should allow to put any file to DFS (upload a file from the Client side to the DFS)
-def file_write(file):
-    # send(file)
-    return -1
+def file_write(file_name):
+    global cur_path
+    byte_file = open(file_name, 'rb').read()
+    file_name = file_name.split('/')[-1]
+    ds_ip_list_ = requests.get(ns_ip + '/writef').content.decode('utf-8')
+    ds_ip_list = ds_ip_list_.split(',')
+    print(ds_ip_list)
+    del ds_ip_list[-1]
+    print(ds_ip_list)
+    for i in range(len(ds_ip_list)):
+        result = requests.post(ds_ip_list[i] + '/writef ' + cur_path + ',' + file_name, byte_file)
+        print(result)
+    return 1
 
 
 # File delete. Should allow to delete any file from DFS
@@ -77,8 +87,12 @@ def file_info(file_name):
 
 
 # File copy. Should allow to create a copy of file.
-def file_copy(file_name):
-    # copy(file_name)
+def file_copy(file_name, dest_path):
+    global cur_path
+    dest_path = dest_path.replace('/', '@')
+    result = requests.post(ns_ip + '/cpoyf ' + cur_path + ',' + file_name + ',' + dest_path)
+    print(result.content.decode('utf-8'))
+
     return 1
 
 
@@ -161,12 +175,14 @@ def command_recognition(comm):
         print("readf fn.ext - Download file 'fn.ext' from server")
         print("writef fn.ext - Upload file 'fn.ext' to server")
         print("rmf fn.ext - Delete file 'fn.ext'")
-        print("copyf fn.ext - Copy 'fn.ext'")
+        print("copyf fn.ext storage/home - Copy 'fn.ext'")
         print("infof fn.ext - Get info about file 'fn.ext'")
-        print("mvf fn.ext ./dir1/ - Move file 'fn.ext' to './dir1/'")
-        print("opendir ./dir1 - Open directory './dir1'")
-        print("mkdir ./dir1 - Create directory './dir1'")
-        print("rmdir ./dir1 - Delete directory './dir1'")
+        print("mvf fn.ext storage/home - Move file 'fn.ext' to 'storage/home'")
+        print("cd home - Open directory '/home'")
+        print("cd.. - Open up directory ")
+        print("cd - Open root directory ")
+        print("mkdir home - Create directory '/home'")
+        print("rmdir home - Delete directory '/home'")
         print("ls - list files in the directory")
         print("exit - Exit from program")
 

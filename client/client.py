@@ -55,8 +55,10 @@ def file_write(file):
 
 # File delete. Should allow to delete any file from DFS
 def file_delete(file_name):
-    # delete(file_name)
-    os.remove(base_dir + sub_dir + "/" + file_name)
+    global cur_path
+    ds_ip_list = requests.post(ns_ip + '/access ' + cur_path + ',' + file_name).content.decode('utf-8')
+    ds_ip_list = ds_ip_list.split(',')
+
     return 1
 
 
@@ -73,8 +75,12 @@ def file_copy(file_name):
 
 
 # File move. Should allow to move a file to the specified path.
-def file_move(file_name, destination):
-    # move(file_name, destination)
+def file_move(file_name, dest_path):
+    global cur_path
+    dest_path = dest_path.replace('/','@')
+    result = requests.post(ns_ip + '/mv ' + cur_path + ',' + file_name + ',' + dest_path)
+    print(result.content.decode('utf-8'))
+
     return 1
 
 
@@ -158,8 +164,6 @@ def command_recognition(comm):
 
         return 0
 
-    if comm == "createf":
-        return 0
     if comm == "init":
         initialize()
         return 0

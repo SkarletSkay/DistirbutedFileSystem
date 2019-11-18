@@ -18,6 +18,16 @@ def home():
 
 @api.route('/init', methods=['GET'])
 def init():
+    for host in DATANODES_IP:
+        hostname = host
+        response = os.system("ping -c 1 " + hostname)
+        # and then check the response...
+        if response == 0:
+            requests.get(f'http://{host}:5000/init')
+            pingstatus = "Network Active"
+        else:
+            pingstatus = "Network Error"
+            
     if os.path.exists(CONFIGURE_PATH):
         shutil.rmtree(CONFIGURE_PATH)
         os.mkdir(CONFIGURE_PATH)
@@ -29,20 +39,10 @@ def init():
     else:
         os.mkdir(CONFIGURE_PATH)
 
-    for host in DATANODES_IP:
-        hostname = host
-        response = os.system("ping -c 1 " + hostname)
-        # and then check the response...
-        if response == 0:
-            requests.get(f'http://{host}:5000/init')
-            pingstatus = "Network Active"
-        else:
-            pingstatus = "Network Error"
-
-    file = open(CONFIGURE_PATH + "storage.txt", 'w+')
-    file.close()
-    total_storage, used_storage, free_storage = shutil.disk_usage('/')
-    return str("Success creation. You can use: %d GB" % (free_storage // (2 ** 30)))
+        file = open(CONFIGURE_PATH + "storage.txt", 'w+')
+        file.close()
+        total_storage, used_storage, free_storage = shutil.disk_usage('/')
+        return str("Success creation. You can use: %d GB" % (free_storage // (2 ** 30)))
 
 
 @api.route('/mkdir <cur_path>,<dir_name>', methods=['POST'])
@@ -59,7 +59,7 @@ def mkdir(cur_path, dir_name):
     file.write(dir_name + '\n')
     file.close()
 
-    return str(f'Success directory creation {CONFIGURE_PATH}{cur_path}@{dir_name}.txt')
+    return str(f'Success directory creation {CONFIGURE_PATH}{cur_path}@{dir_name}')
 
 
 @api.route('/rmdir <cur_path>,<dir_name>', methods=['POST'])

@@ -40,7 +40,7 @@ def readf_file(file_name):
     return bytes
 
 
-@api.route('/createf <dir_name>,<filename>', methods=["POST"])
+@api.route('/writef <dir_name>,<filename>', methods=["POST"])
 def post_file(dir_name, filename):
     """Upload a file."""
     file = open(f'{CONFIGURE_PATH}{dir_name}@{filename}', 'wb')

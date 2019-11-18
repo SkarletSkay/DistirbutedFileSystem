@@ -34,7 +34,7 @@ def init():
         response = os.system("ping -c 1 " + hostname)
         # and then check the response...
         if response == 0:
-            requests.get(f'{host}/init')
+            requests.get(f'http://{host}:5000/init')
             pingstatus = "Network Active"
         else:
             pingstatus = "Network Error"
@@ -107,8 +107,8 @@ def cd(cur_path):
         return 'No such file or directory'
 
 
-@api.route('/createf', methods=['GET'])
-def createf():
+@api.route('/writef', methods=['GET'])
+def writef():
     AVAILABLE_HOSTS = ''
     for host in DATANODES_IP:
         hostname = host

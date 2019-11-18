@@ -1,5 +1,7 @@
 import os
 import shutil
+
+import requests
 from flask import Flask, request, abort, jsonify, send_from_directory
 import re
 
@@ -95,8 +97,8 @@ def cd(cur_path):
         return 'No such file or directory'
 
 
-@api.route('/ping', methods=['GET'])
-def ping():
+@api.route('/createf', methods=['GET'])
+def createf():
     AVAILABLE_HOSTS = ''
     for host in DATANODES_IP:
         hostname = host
@@ -110,12 +112,40 @@ def ping():
 
     return AVAILABLE_HOSTS
 
+
 @api.route('/add_file <dir_name>,<file_name>', methods=['POST'])
 def add_file(dir_name, file_name):
     file = open(f'{CONFIGURE_PATH}{dir_name}.txt', 'a')
-    file.write(file_name+'\n')
+    file.write(file_name + '\n')
     file.close()
     return 'Success add file'
+
+
+@api.route('/readf <dir_name>,<file_name>', methods=['POST'])
+def readf(dir_name, file_name):
+    full_file_name = f'{dir_name}@{file_name}'
+    AVAILABLE_HOSTS_ = ''
+    for host in DATANODES_IP:
+        hostname = host
+        response = os.system("ping -c 1 " + hostname)
+        # and then check the response...
+        if response == 0:
+            AVAILABLE_HOSTS_ += (f'http://{host}:5000,')
+            pingstatus = "Network Active"
+        else:
+            pingstatus = "Network Error"
+
+    AVAILABLE_HOSTS = AVAILABLE_HOSTS_.split(',')
+    del AVAILABLE_HOSTS[-1]
+
+    HOSTS_TO_RETURN = ''
+    for host in AVAILABLE_HOSTS:
+        response = requests.post(f'{host}/find {full_file_name}').content
+        if response == b'1':
+            HOSTS_TO_RETURN += f'{host},'
+
+    return HOSTS_TO_RETURN
+
 
 if __name__ == "__main__":
     api.run(host='0.0.0.0', debug=True, port=5000)

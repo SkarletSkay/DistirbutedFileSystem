@@ -37,8 +37,10 @@ def file_read(file_path, file_name):
     global cur_path
     ds_ip_list_ = requests.post(ns_ip + '/readf ' + cur_path + ',' + file_name).content.decode('utf-8')
     ds_ip_list = ds_ip_list_.split(',') #TODO: добавить проверку на наличие вообще файла
+    del ds_ip_list[-1]
+    print(ds_ip_list)
     result = requests.post(ds_ip_list[0] + '/readf ' + cur_path + '@' + file_name)
-    file = open(file_path, 'wb')
+    file = open(file_path + '/' + file_name, 'wb')
     file.write(result.content)
     file.close()
 
@@ -187,7 +189,7 @@ def command_recognition(comm):
         return 0
 
     if slt_comm[0] == "readf":
-        if len(slt_comm) != 2:
+        if len(slt_comm) != 3:
             print("Wrong parameters")
         else:
             res = file_read(slt_comm[1], slt_comm[2])

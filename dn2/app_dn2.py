@@ -60,10 +60,11 @@ def find(filename):
         return '0'
 
 
-@api.route('/rm <filename>', methods=['POST'])
-def remove_file(filename):
+@api.route('/rm <dir_name>,<filename>', methods=['POST'])
+def remove_file(dir_name, filename):
     try:
-        os.remove(f'{CONFIGURE_PATH}{filename}')
+        os.remove(f'{CONFIGURE_PATH}{dir_name}@{filename}')
+        requests.post(f'{NAMESERVER_IP}/rm_file {dir_name},{filename}')
     except FileNotFoundError:
         return 'File not found', 404
     return 'Success remove file'
@@ -79,6 +80,8 @@ def file_info(filename):
     return f'{size}\n{access_time}\n{modified_time}\n{last_change_time}'
 
     return datetime.datetime.fromtimestamp(info[7]).strftime("%m/%d/%Y, %H:%M:%S")
+
+# @api.route('/')
 
 
 if __name__ == "__main__":

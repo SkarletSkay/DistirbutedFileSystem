@@ -121,8 +121,23 @@ def add_file(dir_name, file_name):
     return 'Success add file'
 
 
+@api.route('/rm_file <dir_name>,<file_name>', methods=['POST'])
+def rm_file(dir_name, file_name):
+    with open(f'{CONFIGURE_PATH}{dir_name}.txt') as f:
+        lines = f.readlines()
+    f.close()
+
+    pattern = re.compile(re.escape(file_name))
+    with open(f'{CONFIGURE_PATH}{dir_name}.txt', 'w') as f:
+        for line in lines:
+            result = pattern.search(line)
+            if result is None:
+                f.write(line)
+    f.close()
+
+
 @api.route('/access <dir_name>,<file_name>', methods=['POST'])
-def readf(dir_name, file_name):
+def access(dir_name, file_name):
     full_file_name = f'{dir_name}@{file_name}'
     AVAILABLE_HOSTS_ = ''
     for host in DATANODES_IP:

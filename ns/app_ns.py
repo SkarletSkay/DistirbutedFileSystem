@@ -121,7 +121,7 @@ def add_file(dir_name, file_name):
     return 'Success add file'
 
 
-@api.route('/readf <dir_name>,<file_name>', methods=['POST'])
+@api.route('/access <dir_name>,<file_name>', methods=['POST'])
 def readf(dir_name, file_name):
     full_file_name = f'{dir_name}@{file_name}'
     AVAILABLE_HOSTS_ = ''

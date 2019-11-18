@@ -50,13 +50,22 @@ def post_file(dir_name, filename):
     return "Successed uploaded"
 
 
-@api.route('/find <filename>', methods=["POST"])
+@api.route('/find <filename>', methods=['POST'])
 def find(filename):
     files = os.listdir(f'{CONFIGURE_PATH}')
     if filename in files:
         return '1'
     else:
         return '0'
+
+
+@api.route('/rm <filename>', methods=['POST'])
+def remove_file(filename):
+    try:
+        os.remove(f'{CONFIGURE_PATH}{filename}')
+    except FileNotFoundError:
+        return 'File not found', 404
+    return 'Success remove file'
 
 
 if __name__ == "__main__":

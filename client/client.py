@@ -35,7 +35,7 @@ def file_create(file_name):
 # File read. Should allow to read any file from DFS (download a file from the DFS to the Client side).
 def file_read(file_path, file_name):
     global cur_path
-    ds_ip_list_ = requests.post(ns_ip + '/readf ' + cur_path + ',' + file_name).content.decode('utf-8')
+    ds_ip_list_ = requests.post(ns_ip + '/access ' + cur_path + ',' + file_name).content.decode('utf-8')
     ds_ip_list = ds_ip_list_.split(',') #TODO: добавить проверку на наличие вообще файла
     del ds_ip_list[-1]
     print(ds_ip_list)

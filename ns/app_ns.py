@@ -27,7 +27,7 @@ def init():
             pingstatus = "Network Active"
         else:
             pingstatus = "Network Error"
-            
+
     if os.path.exists(CONFIGURE_PATH):
         shutil.rmtree(CONFIGURE_PATH)
         os.mkdir(CONFIGURE_PATH)

@@ -147,5 +147,25 @@ def readf(dir_name, file_name):
     return HOSTS_TO_RETURN
 
 
+@api.route('/mv <source_path_dir>,<source_path_file>,<destination_path_dir>', methods=['POST'])
+def move(source_path_dir, source_path_file, destination_path_dir):
+    with open(f'{CONFIGURE_PATH}{source_path_dir}.txt') as f:
+        lines = f.readlines()
+    f.close()
+
+    pattern = re.compile(re.escape(source_path_file))
+    with open(f'{CONFIGURE_PATH}{source_path_dir}.txt', 'w') as f:
+        for line in lines:
+            result = pattern.search(line)
+            if result is None:
+                f.write(line)
+    f.close()
+
+    file = open(f'{CONFIGURE_PATH}{destination_path_dir}.txt', 'a')
+    file.write(source_path_file + '\n')
+    file.close()
+    return 'Success move file'
+
+
 if __name__ == "__main__":
     api.run(host='0.0.0.0', debug=True, port=5000)

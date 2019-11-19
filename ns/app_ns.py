@@ -129,6 +129,18 @@ def rmf(cur_path, file_name):
     return result.content
 
 
+@api.route('/copyf <cur_path>,<file_name>,<file_copy_name>', methods=["POST"])
+def copyf(cur_path, file_name, file_copy_name):
+    ds_ip_list = access(cur_path, file_name)
+    ds_ip_list = ds_ip_list.split(',')
+    del ds_ip_list[-1]
+    file_copy_name = file_copy_name.replace('/', '@')
+    for i in range(len(ds_ip_list)):
+        result = requests.post(ds_ip_list[
+                                   i] + '/copy ' + cur_path + '@' + file_name + ',' + file_copy_name + ',' + cur_path)
+    return result.content
+
+
 @api.route('/infof <cur_path>,<file_name>', methods=["POST"])
 def info(cur_path, file_name):
     ds_ip_list_ = writef()

@@ -32,7 +32,6 @@ def file_read(file_path, file_name):
     ds_ip_list_ = requests.post(ns_ip + '/access ' + cur_path + ',' + file_name).content.decode('utf-8')
     ds_ip_list = ds_ip_list_.split(',')  # TODO: добавить проверку на наличие вообще файла
     del ds_ip_list[-1]
-    # print(ds_ip_list)
     result = requests.post(ds_ip_list[0] + '/readf ' + cur_path + '@' + file_name)
     file = open(file_path + '/' + file_name, 'wb')
     file.write(result.content)

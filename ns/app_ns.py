@@ -23,7 +23,7 @@ def init():
         response = os.system("ping -c 1 " + hostname)
         # and then check the response...
         if response == 0:
-            requests.get(f'http://{host}:5000/init')
+            requests.get(f'http://{host}:9000/init')
             pingstatus = "Network Active"
         else:
             pingstatus = "Network Error"
@@ -160,7 +160,7 @@ def writef():
         response = os.system("ping -c 1 " + hostname)
         # and then check the response...
         if response == 0:
-            AVAILABLE_HOSTS += (f'http://{host}:5000,')
+            AVAILABLE_HOSTS += (f'http://{host}:9000,')
             pingstatus = "Network Active"
         else:
             pingstatus = "Network Error"
@@ -212,7 +212,7 @@ def access(dir_name, file_name):
         response = os.system("ping -c 1 " + hostname)
         # and then check the response...
         if response == 0:
-            AVAILABLE_HOSTS_ += (f'http://{host}:5000,')
+            AVAILABLE_HOSTS_ += (f'http://{host}:9000,')
             pingstatus = "Network Active"
         else:
             pingstatus = "Network Error"

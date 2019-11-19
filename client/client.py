@@ -146,33 +146,39 @@ def ls():
 def cd_dotdot():
     global cur_path
     if (cur_path == base_dir):
-        print('You are in storage')
+        print('You are in /storage, there is no upper directories')
         return 1
     else:
         path_arr = cur_path.split('@')
         del path_arr[-1]
         cur_path = '@'.join(path_arr)
-        print('You are in ' + cur_path.replace('@', '/'))
+        print('You are in ' + '/' + cur_path.replace('@', '/'))
         return 1
 
 # Example: $cd
 def cd_empty():
     global cur_path
     cur_path = base_dir
-    print('You are in storage')
+    print('You are in /storage. Welcome to home directory')
     return 1
 
 # Example: $cd lol
 def cd_dir_name(dir_name):
     global cur_path
-    result = requests.post(ns_ip + '/cd ' + cur_path + '@' + dir_name + '.txt')
+    result = requests.post(ns_ip + '/cd ' + cur_path + '@' + dir_name)
+    print(ns_ip + '/cd ' + cur_path + '@' + dir_name)
     if result.content.decode('utf-8') != 'No such file or directory':
         cur_path = cur_path + '@' + dir_name
+    print(cur_path)
     print(result.content.decode('utf-8'))
     return 1
 
 
 def command_recognition(comm):
+
+    if comm == "":
+        print("Command expected but empty string was given")
+        return 0
 
     if comm == "help":
         print("init - Initialization")

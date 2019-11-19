@@ -50,7 +50,7 @@ def mkdir(cur_path, dir_name):
     dirs = os.listdir(CONFIGURE_PATH)
 
     if f'{cur_path}@{dir_name}.txt' in dirs:
-        return 'Error: the folder already exists'
+        return f'Error: the folder {dir_name} already exists', 404
 
     file = open(f'{CONFIGURE_PATH}{cur_path}@{dir_name}.txt', 'w+')
     file.close()
@@ -59,7 +59,7 @@ def mkdir(cur_path, dir_name):
     file.write(dir_name + '\n')
     file.close()
 
-    return str(f'Success directory creation {cur_path}@{dir_name}')
+    return str(f'Success directory creation /{cur_path}@{dir_name}'), 200
 
 
 @api.route('/rmdir <cur_path>,<dir_name>', methods=['POST'])
@@ -102,9 +102,9 @@ def cd(cur_path):
     dirs = os.listdir(CONFIGURE_PATH)
     if f'{cur_path}.txt' in dirs:
         cur_path_ = str(cur_path).replace('@', '/')
-        return f'Now you are in {cur_path_[0:-4]}'
+        return f'Now you are in {cur_path_[0:-4]}', 200
     else:
-        return 'No such file or directory'
+        return 'No such file or directory', 404
 
 
 @api.route('/writef', methods=['GET'])

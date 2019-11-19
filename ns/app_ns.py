@@ -94,7 +94,7 @@ def ls(cur_path):
     file = open(f'{CONFIGURE_PATH}{cur_path}.txt')
     files = file.read().split('\n')
     file.close()
-    return f'Here list of files in /{cur_path.replace("@","/")}: '+str(files[:len(files) - 1])
+    return f'Here list of files in /{cur_path.replace("@", "/")}: ' + str(files[:len(files) - 1])
 
 
 @api.route('/cd <cur_path>', methods=['POST'])
@@ -106,6 +106,7 @@ def cd(cur_path):
     else:
         return 'No such file or directory', 404
 
+
 @api.route('/createf <cur_path>,<file_name>', methods=["POST"])
 def createf(cur_path, file_name):
     ds_ip_list_ = writef()
@@ -116,6 +117,7 @@ def createf(cur_path, file_name):
         result = requests.post(ds_ip_list[i] + '/createf ' + cur_path + ',' + file_name)
     return result.content
 
+
 @api.route('/rmf <cur_path>,<file_name>', methods=["POST"])
 def rmf(cur_path, file_name):
     ds_ip_list_ = writef()
@@ -124,6 +126,17 @@ def rmf(cur_path, file_name):
     result = ""
     for i in range(len(ds_ip_list)):
         result = requests.post(ds_ip_list[i] + '/rm ' + cur_path + ',' + file_name)
+    return result.content
+
+
+@api.route('/infof <cur_path>,<file_name>', methods=["POST"])
+def info(cur_path, file_name):
+    ds_ip_list_ = writef()
+    ds_ip_list = ds_ip_list_.split(',')
+    del ds_ip_list[-1]
+    result = ""
+    for i in range(len(ds_ip_list)):
+        result = requests.post(ds_ip_list[i] + '/info ' + cur_path + '@' + file_name)
     return result.content
 
 

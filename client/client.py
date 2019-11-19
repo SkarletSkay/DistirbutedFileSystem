@@ -72,11 +72,7 @@ def file_delete(file_name):
 # File info. Should provide information about the file (any useful information - size, node id, etc.)
 # Example: $infof image.png
 def file_info(file_name):
-    global cur_path
-    ds_ip_list = requests.post(ns_ip + '/access ' + cur_path + ',' + file_name).content.decode('utf-8')
-    ds_ip_list = ds_ip_list.split(',')
-    del ds_ip_list[-1]
-    result = requests.post(ds_ip_list[0] + '/info ' + cur_path + '@' + file_name).content.decode('utf-8')
+    result = requests.post(f'{ns_ip}/infof {cur_path},{file_name}').content.decode('utf-8')
     print(result)
     return 1
 

@@ -42,6 +42,7 @@ def file_read(file_path, file_name):
     file = open(file_path + '/' + file_name, 'wb')
     file.write(result.content)
     file.close()
+    print(f'File {file_name} stored in {file_path}')
 
     return 1
 
@@ -114,7 +115,7 @@ def file_move(file_name, dest_path):
 def make_directory(dir_name):
     global cur_path
     result = requests.post(ns_ip + '/mkdir ' + cur_path + ',' + dir_name)
-    print(result.content.decode('utf-8')) #TODO надо пичинить вывод, а то там собаки вылезают вместо тэгов
+    print(result.content.decode('utf-8').replace('@', '/')) #TODO надо пичинить вывод, а то там собаки вылезают вместо тэгов
     return 1
 
 
@@ -159,7 +160,7 @@ def cd_empty():
 def cd_dir_name(dir_name):
     global cur_path
     result = requests.post(ns_ip + '/cd ' + cur_path + '@' + dir_name + '.txt')
-    if result.content != 'No such file or directory':
+    if result.content.decode('utf-8') != 'No such file or directory':
         cur_path = cur_path + '@' + dir_name
     print(result.content.decode('utf-8'))
     return 1
@@ -170,7 +171,7 @@ def command_recognition(comm):
     if comm == "help":
         print("init - Initialization")
         print("createf fn.ext - Create file with name 'fn.ext'")
-        print("readf fn.ext - Download file 'fn.ext' from server")
+        print("readf storage/home/Desktop fn.ext - Download file 'fn.ext' from server")
         print("writef fn.ext - Upload file 'fn.ext' to server")
         print("rmf fn.ext - Delete file 'fn.ext'")
         print("copyf fn.ext storage/home - Copy 'fn.ext'")
@@ -186,14 +187,15 @@ def command_recognition(comm):
 
         return 0
 
-    if comm == "init":
+    if comm.replace(' ', '') == "init":
         initialize()
         return 0
-    if comm == "ls":
+    if comm.replace(' ', '') == "ls":
         ls()
         return 0
 
-    slt_comm = comm.split(" ")
+    slt_comm = comm.split()
+
     if slt_comm[0] == 'cd' and len(slt_comm) == 1 :
         cd_empty()
         return 0

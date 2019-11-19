@@ -59,7 +59,7 @@ def mkdir(cur_path, dir_name):
     file.write(dir_name + '\n')
     file.close()
 
-    return str(f'Success directory creation {CONFIGURE_PATH}{cur_path}@{dir_name}')
+    return str(f'Success directory creation {cur_path}@{dir_name}')
 
 
 @api.route('/rmdir <cur_path>,<dir_name>', methods=['POST'])
@@ -100,7 +100,7 @@ def ls(cur_path):
 @api.route('/cd <cur_path>', methods=['POST'])
 def cd(cur_path):
     dirs = os.listdir(CONFIGURE_PATH)
-    if cur_path in dirs:
+    if f'{cur_path}.txt' in dirs:
         cur_path_ = str(cur_path).replace('@', '/')
         return f'Now you are in {cur_path_[0:-4]}'
     else:
@@ -186,22 +186,26 @@ def access(dir_name, file_name):
 
 @api.route('/mv <source_path_dir>,<source_path_file>,<destination_path_dir>', methods=['POST'])
 def move(source_path_dir, source_path_file, destination_path_dir):
-    with open(f'{CONFIGURE_PATH}{source_path_dir}.txt') as f:
-        lines = f.readlines()
-    f.close()
+    dirs = os.listdir(CONFIGURE_PATH)
+    if f'{destination_path_dir}.txt' in dirs:
+        with open(f'{CONFIGURE_PATH}{source_path_dir}.txt') as f:
+            lines = f.readlines()
+        f.close()
 
-    pattern = re.compile(re.escape(source_path_file))
-    with open(f'{CONFIGURE_PATH}{source_path_dir}.txt', 'w') as f:
-        for line in lines:
-            result = pattern.search(line)
-            if result is None:
-                f.write(line)
-    f.close()
+        pattern = re.compile(re.escape(source_path_file))
+        with open(f'{CONFIGURE_PATH}{source_path_dir}.txt', 'w') as f:
+            for line in lines:
+                result = pattern.search(line)
+                if result is None:
+                    f.write(line)
+        f.close()
 
-    file = open(f'{CONFIGURE_PATH}{destination_path_dir}.txt', 'a')
-    file.write(source_path_file + '\n')
-    file.close()
-    return 'Success move file'
+        file = open(f'{CONFIGURE_PATH}{destination_path_dir}.txt', 'a')
+        file.write(source_path_file + '\n')
+        file.close()
+        return 'Success move file'
+    else:
+        return 'Error: No such destination directory', 404
 
 
 if __name__ == "__main__":

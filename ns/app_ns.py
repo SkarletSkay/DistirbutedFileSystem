@@ -94,7 +94,7 @@ def ls(cur_path):
     file = open(f'{CONFIGURE_PATH}{cur_path}.txt')
     files = file.read().split('\n')
     file.close()
-    return str(files[:len(files) - 1])
+    return f'Here list of files in /{cur_path.replace("@","/")}: '+str(files[:len(files) - 1])
 
 
 @api.route('/cd <cur_path>', methods=['POST'])

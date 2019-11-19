@@ -23,9 +23,10 @@ def file_create(file_name):
     #print(ds_ip_list)
     del ds_ip_list[-1]
     #print(ds_ip_list)
+    result = ""
     for i in range(len(ds_ip_list)):
         result = requests.post(ds_ip_list[i] + '/createf ' + cur_path + ',' + file_name).content.decode('utf-8')
-        print(result)
+    print(result)
     return 1
 
 
@@ -58,9 +59,10 @@ def file_write(file_name):
     #print(ds_ip_list)
     del ds_ip_list[-1]
     #print(ds_ip_list)
+    result = ""
     for i in range(len(ds_ip_list)):
         result = requests.post(ds_ip_list[i] + '/writef ' + cur_path + ',' + file_name, byte_file)
-        print(result)
+    print(result)
     return 1
 
 
@@ -166,7 +168,6 @@ def cd_empty():
 def cd_dir_name(dir_name):
     global cur_path
     result = requests.post(ns_ip + '/cd ' + cur_path + '@' + dir_name)
-    print(ns_ip + '/cd ' + cur_path + '@' + dir_name)
     if result.content.decode('utf-8') != 'No such file or directory':
         cur_path = cur_path + '@' + dir_name
     print(result.content.decode('utf-8'))

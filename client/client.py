@@ -54,7 +54,7 @@ def file_write(file_name):
     # print(ds_ip_list)
     result = ""
     for i in range(len(ds_ip_list)):
-        result = requests.post(ds_ip_list[i] + '/writef ' + cur_path + ',' + file_name, byte_file)
+        result = requests.post(ds_ip_list[i] + '/writef ' + cur_path + ',' + file_name, byte_file).content.decode('utf-8')
     print(result)
     return 1
 
@@ -142,7 +142,7 @@ def cd_dotdot():
 def cd_empty():
     global cur_path
     cur_path = base_dir
-    print('You are in /storage. Welcome to home directory')
+    print('You are in /storage.')
     return 1
 
 

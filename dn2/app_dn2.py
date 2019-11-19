@@ -39,6 +39,12 @@ def readf_file(file_name):
 
     return bytes
 
+@api.route('/createf <dir_name>,<filename>', methods=["POST"])
+def create_file(dir_name, filename):
+    """"Create a file"""
+    file = open(f'{CONFIGURE_PATH}{dir_name}@{filename}', 'w+')
+    file.close
+    return 'Successed created'
 
 @api.route('/writef <dir_name>,<filename>', methods=["POST"])
 def post_file(dir_name, filename):

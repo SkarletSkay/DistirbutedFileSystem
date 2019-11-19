@@ -24,7 +24,7 @@ def file_create(file_name):
     del ds_ip_list[-1]
     #print(ds_ip_list)
     for i in range(len(ds_ip_list)):
-        result = requests.post(ds_ip_list[i] + '/createf ' + cur_path + ',' + file_name)
+        result = requests.post(ds_ip_list[i] + '/createf ' + cur_path + ',' + file_name).content.decode('utf-8')
         print(result)
     return 1
 
@@ -104,8 +104,7 @@ def file_copy(file_name, dest_path):
 def file_move(file_name, dest_path):
     global cur_path
     dest_path = dest_path.replace('/', '@')
-    result = requests.post(ns_ip + '/mv ' + cur_path + ',' + file_name + ',' + dest_path)
-    print(result.content.decode('utf-8'))
+    requests.post(ns_ip + '/mv ' + cur_path + ',' + file_name + ',' + dest_path)
 
     return 1
 
@@ -254,9 +253,9 @@ def command_recognition(comm):
         if len(slt_comm) != 3:
             print("Wrong parameters")
         else:
-            res = (slt_comm[1], slt_comm[2])
+            res = file_move(slt_comm[1], slt_comm[2])
             if res == 1:
-                print("Success. File", slt_comm[1], "has moved to", slt_comm[2])
+                print("File", slt_comm[1], "has moved to", slt_comm[2])
             else:
                 if res == 0:
                     print("File not found")

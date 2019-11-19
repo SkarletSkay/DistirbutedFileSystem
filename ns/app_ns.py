@@ -116,6 +116,16 @@ def createf(cur_path, file_name):
         result = requests.post(ds_ip_list[i] + '/createf ' + cur_path + ',' + file_name)
     return result.content
 
+@api.route('/rmf <cur_path>,<file_name>', methods=["POST"])
+def rmf(cur_path, file_name):
+    ds_ip_list_ = writef()
+    ds_ip_list = ds_ip_list_.split(',')
+    del ds_ip_list[-1]
+    result = ""
+    for i in range(len(ds_ip_list)):
+        result = requests.post(ds_ip_list[i] + '/rm ' + cur_path + ',' + file_name)
+    return result.content
+
 
 @api.route('/writef', methods=['GET'])
 def writef():

@@ -6,6 +6,7 @@ sub_dir = ''
 cur_path = base_dir
 ns_ip = 'http://3.135.19.135:5000'
 
+
 # Initialize the client storage on a new system, should remove any existing file in the dfs root directory and return
 # available size.
 def initialize():
@@ -29,9 +30,9 @@ def file_create(file_name):
 def file_read(file_path, file_name):
     global cur_path
     ds_ip_list_ = requests.post(ns_ip + '/access ' + cur_path + ',' + file_name).content.decode('utf-8')
-    ds_ip_list = ds_ip_list_.split(',') #TODO: добавить проверку на наличие вообще файла
+    ds_ip_list = ds_ip_list_.split(',')  # TODO: добавить проверку на наличие вообще файла
     del ds_ip_list[-1]
-    #print(ds_ip_list)
+    # print(ds_ip_list)
     result = requests.post(ds_ip_list[0] + '/readf ' + cur_path + '@' + file_name)
     file = open(file_path + '/' + file_name, 'wb')
     file.write(result.content)
@@ -49,9 +50,9 @@ def file_write(file_name):
     file_name = file_name.split('/')[-1]
     ds_ip_list_ = requests.get(ns_ip + '/writef').content.decode('utf-8')
     ds_ip_list = ds_ip_list_.split(',')
-    #print(ds_ip_list)
+    # print(ds_ip_list)
     del ds_ip_list[-1]
-    #print(ds_ip_list)
+    # print(ds_ip_list)
     result = ""
     for i in range(len(ds_ip_list)):
         result = requests.post(ds_ip_list[i] + '/writef ' + cur_path + ',' + file_name, byte_file)
@@ -63,12 +64,8 @@ def file_write(file_name):
 # Example: $rmf image.png
 def file_delete(file_name):
     global cur_path
-    ds_ip_list = requests.post(ns_ip + '/access ' + cur_path + ',' + file_name).content.decode('utf-8')
-    ds_ip_list = ds_ip_list.split(',')
-    del ds_ip_list[-1]
-    for i in range(len(ds_ip_list)):
-        result = requests.post(ds_ip_list[i] + '/rm ' + cur_path + ',' + file_name).content.decode('utf-8')
-        print(result)
+    result = requests.post(f'{ns_ip}/rmf {cur_path},{file_name}').content.decode('utf-8')
+    print(result)
     return 1
 
 
@@ -95,7 +92,9 @@ def file_copy(file_name, file_copy_name):
     print(f'You are going copy {file_name} as {file_copy_name} to /{cur_path.replace("@", "/")}')
     for i in range(len(ds_ip_list)):
         # print(ds_ip_list[i] + '/copy ' + cur_path + '@' + file_name + ',' + file_copy_name + ',' + cur_path)
-        result = requests.post(ds_ip_list[i] + '/copy ' + cur_path + '@' + file_name + ',' + file_copy_name + ',' + cur_path).content.decode('utf-8')
+        result = requests.post(ds_ip_list[
+                                   i] + '/copy ' + cur_path + '@' + file_name + ',' + file_copy_name + ',' + cur_path).content.decode(
+            'utf-8')
         print(result)
 
     return 1
@@ -116,7 +115,8 @@ def file_move(file_name, dest_path):
 def make_directory(dir_name):
     global cur_path
     result = requests.post(ns_ip + '/mkdir ' + cur_path + ',' + dir_name)
-    print(result.content.decode('utf-8').replace('@', '/')) #TODO надо пичинить вывод, а то там собаки вылезают вместо тэгов
+    print(result.content.decode('utf-8').replace('@',
+                                                 '/'))  # TODO надо пичинить вывод, а то там собаки вылезают вместо тэгов
     return 1
 
 
@@ -129,6 +129,7 @@ def delete_directory(dir_name):
     print(result.content.decode('utf-8'))
     return 1
 
+
 # ls. Should return list of files, which are stored in the directory.
 # Example: $ls
 def ls():
@@ -136,6 +137,7 @@ def ls():
     result = requests.post(ns_ip + '/ls ' + cur_path)
     print(result.content.decode('utf-8'))
     return 1
+
 
 # Example: $cd..
 def cd_dotdot():
@@ -150,12 +152,14 @@ def cd_dotdot():
         print('You are in ' + '/' + cur_path.replace('@', '/'))
         return 1
 
+
 # Example: $cd
 def cd_empty():
     global cur_path
     cur_path = base_dir
     print('You are in /storage. Welcome to home directory')
     return 1
+
 
 # Example: $cd lol
 def cd_dir_name(dir_name):
@@ -168,7 +172,6 @@ def cd_dir_name(dir_name):
 
 
 def command_recognition(comm):
-
     if comm == "":
         print("Command expected but empty string was given")
         return 0
@@ -201,7 +204,7 @@ def command_recognition(comm):
 
     slt_comm = comm.split()
 
-    if slt_comm[0] == 'cd' and len(slt_comm) == 1 :
+    if slt_comm[0] == 'cd' and len(slt_comm) == 1:
         cd_empty()
         return 0
     elif slt_comm[0] == 'cd' and slt_comm[1] == '':
@@ -210,7 +213,7 @@ def command_recognition(comm):
     elif slt_comm[0] == 'cd..':
         cd_dotdot()
         return 0
-    elif slt_comm[0] == 'cd' and len(slt_comm) > 1 :
+    elif slt_comm[0] == 'cd' and len(slt_comm) > 1:
         cd_dir_name(slt_comm[1])
         return 0
 
@@ -274,7 +277,6 @@ def command_recognition(comm):
         else:
             make_directory(slt_comm[1])
         return 0
-
 
     if slt_comm[0] == "rmdir":
         if len(slt_comm) != 2:

@@ -25,10 +25,13 @@ def file_create(file_name):
 
 
 # File read. Should allow to read any file from DFS (download a file from the DFS to the Client side).
-# Example: $readf image.jpg
+# Example: $readf /storage/home/Desktop test.txt
 # Request example: http://3.135.19.135:5000/access storage@home,image.jpg
 def file_read(file_path, file_name):
     global cur_path
+    if not os.path.exists(file_path):
+        print('Wrong directory')
+        return 1
     ds_ip_list_ = requests.post(ns_ip + '/access ' + cur_path + ',' + file_name).content.decode('utf-8')
     ds_ip_list = ds_ip_list_.split(',')  # TODO: добавить проверку на наличие вообще файла
     del ds_ip_list[-1]
@@ -90,8 +93,8 @@ def file_copy(file_name, file_copy_name):
 def file_move(file_name, dest_path):
     global cur_path
     dest_path = dest_path.replace('/', '@')
-    requests.post(ns_ip + '/mv ' + cur_path + ',' + file_name + ',' + dest_path)
-
+    result = requests.post(ns_ip + '/mv ' + cur_path + ',' + file_name + ',' + dest_path)
+    print(result.content.decode('utf-8'))
     return 1
 
 
@@ -249,11 +252,6 @@ def command_recognition(comm):
             print("Wrong parameters")
         else:
             res = file_move(slt_comm[1], slt_comm[2])
-            if res == 1:
-                print("File", slt_comm[1], "has moved to", slt_comm[2])
-            else:
-                if res == 0:
-                    print("File not found")
         return 0
 
     if slt_comm[0] == "mkdir":

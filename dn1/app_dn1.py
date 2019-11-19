@@ -4,6 +4,7 @@ import shutil
 import requests
 from flask import Flask, request, abort, jsonify, send_from_directory
 import datetime
+from shutil import copyfile
 
 NAMESERVER_IP = 'http://3.135.19.135:5000'
 
@@ -39,12 +40,14 @@ def readf_file(file_name):
 
     return bytes
 
+
 @api.route('/createf <dir_name>,<filename>', methods=["POST"])
 def create_file(dir_name, filename):
     """"Create a file"""
     file = open(f'{CONFIGURE_PATH}{dir_name}@{filename}', 'w+')
     file.close
     return 'Successed created'
+
 
 @api.route('/writef <dir_name>,<filename>', methods=["POST"])
 def post_file(dir_name, filename):
@@ -87,8 +90,22 @@ def file_info(filename):
 
     return datetime.datetime.fromtimestamp(info[7]).strftime("%m/%d/%Y, %H:%M:%S")
 
-# @api.route('/')
 
+@api.route('/copy <filename_source>,<filename_copy>,<current_path>', methods = ['POST'])
+def copy(filename_source, filename_copy, current_path):
+    try:
+        f = open(CONFIGURE_PATH+filename_source)
+        f.close()
+    except FileNotFoundError:
+        return 'File does not exist', 404
+
+    try:
+        copyfile(CONFIGURE_PATH+filename_source, CONFIGURE_PATH+current_path+'@'+filename_copy)
+    except FileNotFoundError:
+        return 'File not found', 404
+
+    requests.post(f'{NAMESERVER_IP}/add_file {current_path},{filename_copy}')
+    return 'Success copy', 200
 
 if __name__ == "__main__":
     api.run(host='0.0.0.0', debug=True, port=5000)

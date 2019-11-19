@@ -91,11 +91,17 @@ def file_info(file_name):
 
 # File copy. Should allow to create a copy of file.
 # Example: $copyf image.png storage/lol
-def file_copy(file_name, dest_path):
+def file_copy(file_name, file_copy_name):
     global cur_path
-    dest_path = dest_path.replace('/', '@')
-    result = requests.post(ns_ip + '/copyf ' + cur_path + ',' + file_name + ',' + dest_path)
-    print(result.content.decode('utf-8'))
+    ds_ip_list = requests.post(ns_ip + '/access ' + cur_path + ',' + file_name).content.decode('utf-8')
+    ds_ip_list = ds_ip_list.split(',')
+    del ds_ip_list[-1]
+    file_copy_name = file_copy_name.replace('/', '@')
+    print(f'You are going copy {file_name} as {file_copy_name} to /{cur_path.replace("@", "/")}')
+    for i in range(len(ds_ip_list)):
+        # print(ds_ip_list[i] + '/copy ' + cur_path + '@' + file_name + ',' + file_copy_name + ',' + cur_path)
+        result = requests.post(ds_ip_list[i] + '/copy ' + cur_path + '@' + file_name + ',' + file_copy_name + ',' + cur_path).content.decode('utf-8')
+        print(result)
 
     return 1
 
@@ -245,10 +251,10 @@ def command_recognition(comm):
         return 0
 
     if slt_comm[0] == "copyf":
-        if len(slt_comm) != 2:
+        if len(slt_comm) != 3:
             print("Wrong parameters")
         else:
-            file_copy(slt_comm[1])
+            file_copy(slt_comm[1], slt_comm[2])
         return 0
 
     if slt_comm[0] == "mvf":

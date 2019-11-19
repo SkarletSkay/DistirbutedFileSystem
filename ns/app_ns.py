@@ -252,6 +252,28 @@ def move(source_path_dir, source_path_file, destination_path_dir):
     else:
         return 'Error: No such destination directory', 404
 
+@api.route('/raiseup <ip>', methods=['POST'])
+def raiseup(ip):
+    AVAILABLE_HOSTS = []
+    for host in DATANODES_IP:
+        hostname = host
+        response = os.system("ping -c 1 " + hostname)
+        # and then check the response...
+        if response == 0 and hostname != ip:
+            AVAILABLE_HOSTS.append({host})
+            pingstatus = "Network Active"
+        else:
+            pingstatus = "Network Error"
+    ip_to_replicate = str(AVAILABLE_HOSTS[0])[2:-2]
+
+    file_list_str = requests.get(f'http://{ip_to_replicate}:9000/ls').content
+    file_list = file_list_str.split(b',')
+    for file in file_list:
+        file_ = file.decode('utf-8')
+        file_download = requests.post(f'http://{ip_to_replicate}:9000/readf {file_}')
+        file_upload = requests.post(f'http://{ip}:9000/upload {file_}', file_download)
+    return 'Success replication', 200
+
 
 if __name__ == "__main__":
     api.run(host='0.0.0.0', debug=True, port=5000)

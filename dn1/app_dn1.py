@@ -41,6 +41,13 @@ def readf_file(file_name):
     return bytes
 
 
+@api.route('/ls', methods=['GET'])
+def ls():
+    ls_files = os.listdir(CONFIGURE_PATH)
+    ls_result = ",".join(ls_files)
+    return ls_result
+
+
 @api.route('/createf <dir_name>,<filename>', methods=["POST"])
 def create_file(dir_name, filename):
     """"Create a file"""
@@ -48,6 +55,16 @@ def create_file(dir_name, filename):
     file.close
     requests.post(f'{NAMESERVER_IP}/add_file {dir_name},{filename}')
     return 'Successed created'
+
+
+@api.route('/upload <filename>', methods=["POST"])
+def upload(filename):
+    """Upload a file."""
+    file = open(f'{CONFIGURE_PATH}{filename}', 'wb')
+    file.write(request.data)
+    file.close()
+    # Return 201 CREATED
+    return "Successed uploaded"
 
 
 @api.route('/writef <dir_name>,<filename>', methods=["POST"])
@@ -92,21 +109,22 @@ def file_info(filename):
     return datetime.datetime.fromtimestamp(info[7]).strftime("%m/%d/%Y, %H:%M:%S")
 
 
-@api.route('/copy <filename_source>,<filename_copy>,<current_path>', methods = ['POST'])
+@api.route('/copy <filename_source>,<filename_copy>,<current_path>', methods=['POST'])
 def copy(filename_source, filename_copy, current_path):
     try:
-        f = open(CONFIGURE_PATH+filename_source)
+        f = open(CONFIGURE_PATH + filename_source)
         f.close()
     except FileNotFoundError:
         return 'File does not exist', 404
 
     try:
-        copyfile(CONFIGURE_PATH+filename_source, CONFIGURE_PATH+current_path+'@'+filename_copy)
+        copyfile(CONFIGURE_PATH + filename_source, CONFIGURE_PATH + current_path + '@' + filename_copy)
     except FileNotFoundError:
         return 'File not found', 404
 
     requests.post(f'{NAMESERVER_IP}/add_file {current_path},{filename_copy}')
     return 'Success copy', 200
+
 
 if __name__ == "__main__":
     api.run(host='0.0.0.0', debug=True, port=9000)

@@ -169,7 +169,6 @@ def cd_dir_name(dir_name):
     print(ns_ip + '/cd ' + cur_path + '@' + dir_name)
     if result.content.decode('utf-8') != 'No such file or directory':
         cur_path = cur_path + '@' + dir_name
-    print(cur_path)
     print(result.content.decode('utf-8'))
     return 1
 

@@ -102,7 +102,7 @@ def cd(cur_path):
     dirs = os.listdir(CONFIGURE_PATH)
     if f'{cur_path}.txt' in dirs:
         cur_path_ = str(cur_path).replace('@', '/')
-        return f'Now you are in {cur_path_[0:-4]}', 200
+        return f'Now you are in /{cur_path_}', 200
     else:
         return 'No such file or directory', 404
 

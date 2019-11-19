@@ -46,6 +46,7 @@ def create_file(dir_name, filename):
     """"Create a file"""
     file = open(f'{CONFIGURE_PATH}{dir_name}@{filename}', 'w+')
     file.close
+    requests.post(f'{NAMESERVER_IP}/add_file {dir_name},{filename}')
     return 'Successed created'
 
 

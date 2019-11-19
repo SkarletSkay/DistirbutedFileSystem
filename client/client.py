@@ -18,14 +18,7 @@ def initialize():
 # File create. Should allow to create a new empty file.
 def file_create(file_name):
     global cur_path
-    ds_ip_list_ = requests.get(ns_ip + '/writef').content.decode('utf-8')
-    ds_ip_list = ds_ip_list_.split(',')
-    #print(ds_ip_list)
-    del ds_ip_list[-1]
-    #print(ds_ip_list)
-    result = ""
-    for i in range(len(ds_ip_list)):
-        result = requests.post(ds_ip_list[i] + '/createf ' + cur_path + ',' + file_name).content.decode('utf-8')
+    result = requests.post(f'{ns_ip}/createf {cur_path},{file_name}').content.decode('utf-8')
     print(result)
     return 1
 

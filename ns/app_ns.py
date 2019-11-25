@@ -232,8 +232,8 @@ def access(dir_name, file_name):
 @api.route('/mv <source_path_dir>,<source_path_file>,<destination_path_dir>', methods=['POST'])
 def move(source_path_dir, source_path_file, destination_path_dir):
     dirs = os.listdir(CONFIGURE_PATH)
-    if not f'{source_path_dir}@{source_path_file}.txt' in dirs:
-        return 'No such file'
+    if not f'{destination_path_dir.replace("/","@")}.txt' in dirs:
+        return f'Directory /{destination_path_dir.replace("@","/")} does not exist', 404
     if f'{destination_path_dir}.txt' in dirs:
         with open(f'{CONFIGURE_PATH}{source_path_dir}.txt') as f:
             lines = f.readlines()

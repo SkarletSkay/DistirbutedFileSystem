@@ -23,8 +23,11 @@ def init():
         response = os.system("ping -c 1 " + hostname)
         # and then check the response...
         if response == 0:
-            requests.get(f'http://{host}:9000/init')
-            pingstatus = "Network Active"
+            pingstatus = "Server works"
+            try:
+                requests.get(f'http://{host}:9000/init')
+            except:
+                ConnectionError
         else:
             pingstatus = "Network Error"
 
@@ -160,8 +163,12 @@ def writef():
         response = os.system("ping -c 1 " + hostname)
         # and then check the response...
         if response == 0:
-            AVAILABLE_HOSTS += (f'http://{host}:9000,')
-            pingstatus = "Network Active"
+            try:
+                requests.get(f'http://{host}:9000')
+                AVAILABLE_HOSTS += (f'http://{host}:9000,')
+            except:
+                ConnectionError
+            pingstatus = "Server Active"
         else:
             pingstatus = "Network Error"
 
@@ -212,8 +219,12 @@ def access(dir_name, file_name):
         response = os.system("ping -c 1 " + hostname)
         # and then check the response...
         if response == 0:
-            AVAILABLE_HOSTS_ += (f'http://{host}:9000,')
-            pingstatus = "Network Active"
+            try:
+                requests.get(f'http://{host}:9000')
+                AVAILABLE_HOSTS_ += (f'http://{host}:9000,')
+            except:
+                ConnectionError
+            pingstatus = "Server works"
         else:
             pingstatus = "Network Error"
 
@@ -262,8 +273,12 @@ def raiseup(ip):
         response = os.system("ping -c 1 " + hostname)
         # and then check the response...
         if response == 0 and hostname != ip:
-            AVAILABLE_HOSTS.append({host})
-            pingstatus = "Network Active"
+            try:
+                requests.get(f'http://{host}:9000/')
+                AVAILABLE_HOSTS.append({host})
+            except:
+                ConnectionError
+            pingstatus = "Server works"
         else:
             pingstatus = "Network Error"
     ip_to_replicate = str(AVAILABLE_HOSTS[0])[2:-2]

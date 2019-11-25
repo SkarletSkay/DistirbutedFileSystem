@@ -14,7 +14,7 @@ api = Flask(__name__)
 
 @api.route('/', methods=['GET'])
 def home():
-    return f"Welcome to Super DFS! Here files in STORAGE_PATH: {os.listdir(CONFIGURE_PATH)}"
+    return f"Welcome to Super DFS! Here files in STORAGE_PATH: {os.listdir(CONFIGURE_PATH)}", 200
 
 
 @api.route('/init', methods=['GET'])

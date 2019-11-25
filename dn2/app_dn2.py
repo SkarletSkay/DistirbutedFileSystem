@@ -126,5 +126,15 @@ def copy(filename_source, filename_copy, current_path):
     return 'Success copy', 200
 
 
+@api.route('/rename <old_name>,<new_name>', methods=['POST'])
+def rename(old_name, new_name):
+    try:
+        os.rename(f'{CONFIGURE_PATH}{old_name}', f'{CONFIGURE_PATH}{new_name}')
+    except FileNotFoundError:
+        return 'File not found', 404
+
+    return 'Success rename', 200
+
+
 if __name__ == "__main__":
     api.run(host='0.0.0.0', debug=True, port=9000)

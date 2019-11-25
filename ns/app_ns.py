@@ -240,30 +240,35 @@ def access(dir_name, file_name):
     return HOSTS_TO_RETURN
 
 
-@api.route('/mv <source_path_dir>,<source_path_file>,<destination_path_dir>', methods=['POST'])
-def move(source_path_dir, source_path_file, destination_path_dir):
+@api.route('/mv <source_path_dir>,<file_name>,<destination_path_dir>', methods=['POST'])
+def move(source_path_dir, file_name, destination_path_dir):
     dirs = os.listdir(CONFIGURE_PATH)
-    if not f'{destination_path_dir.replace("/","@")}.txt' in dirs:
-        return f'Directory /{destination_path_dir.replace("@","/")} does not exist', 404
-    if f'{destination_path_dir}.txt' in dirs:
-        with open(f'{CONFIGURE_PATH}{source_path_dir}.txt') as f:
-            lines = f.readlines()
-        f.close()
+    if not f'{destination_path_dir.replace("/", "@")}.txt' in dirs:
+        return f'Destination directory /{destination_path_dir.replace("@", "/")} does not exist', 404
 
-        pattern = re.compile(re.escape(source_path_file))
-        with open(f'{CONFIGURE_PATH}{source_path_dir}.txt', 'w') as f:
-            for line in lines:
-                result = pattern.search(line)
-                if result is None:
-                    f.write(line)
-        f.close()
+    with open(f'{CONFIGURE_PATH}{source_path_dir}.txt') as f:
+        lines = f.readlines()
+    f.close()
 
-        file = open(f'{CONFIGURE_PATH}{destination_path_dir}.txt', 'a')
-        file.write(source_path_file + '\n')
-        file.close()
-        return 'Success move file'
-    else:
-        return 'Error: No such destination directory', 404
+    pattern = re.compile(re.escape(file_name))
+    with open(f'{CONFIGURE_PATH}{source_path_dir}.txt', 'w') as f:
+        for line in lines:
+            result = pattern.search(line)
+            if result is None:
+                f.write(line)
+    f.close()
+
+    file = open(f'{CONFIGURE_PATH}{destination_path_dir}.txt', 'a')
+    file.write(file_name + '\n')
+    file.close()
+
+    ds_ip_list_ = writef()
+    ds_ip_list = ds_ip_list_.split(',')
+    del ds_ip_list[-1]
+    for ip in ds_ip_list:
+        requests.post(f'{ip}/rename {source_path_dir}@{file_name},{destination_path_dir}@{file_name}')
+    return 'Success move file'
+
 
 @api.route('/raiseup <ip>', methods=['POST'])
 def raiseup(ip):

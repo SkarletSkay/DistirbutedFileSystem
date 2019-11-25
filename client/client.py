@@ -4,7 +4,7 @@ import requests
 base_dir = 'storage'
 sub_dir = ''
 cur_path = base_dir
-ns_ip = 'http://3.135.19.135:5000'
+ns_ip = 'http://nameserver:5000'
 
 
 # Initialize the client storage on a new system, should remove any existing file in the dfs root directory and return

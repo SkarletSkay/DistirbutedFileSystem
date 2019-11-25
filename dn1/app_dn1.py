@@ -6,7 +6,7 @@ from flask import Flask, request, abort, jsonify, send_from_directory
 import datetime
 from shutil import copyfile
 
-NAMESERVER_IP = 'http://3.135.19.135:5000'
+NAMESERVER_IP = 'http://nameserver:5000'
 
 CONFIGURE_PATH = './storage/'
 api = Flask(__name__)

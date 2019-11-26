@@ -43,7 +43,7 @@ exit - Exit from program
 ```
 
 **Nameserver:**
-
+```
 '/init'
 '/mkdir <cur_path>,<dir_name>'
 '/rmdir <cur_path>,<dir_name>'
@@ -59,8 +59,10 @@ exit - Exit from program
 '/access <dir_name>,<file_name>'
 '/mv <source_path_dir>,<source_path_file>,<destination_path_dir>'
 '/raiseup <ip>'
+```
 
 **Storage:**
+```
 '/'
 '/init'
 '/readf <file_name>'
@@ -73,3 +75,4 @@ exit - Exit from program
 '/info <filename>'
 '/copy <filename_source>,<filename_copy>,<current_path>'
 '/rename <old_name>,<new_name>'
+```

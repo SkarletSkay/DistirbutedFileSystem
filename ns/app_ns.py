@@ -8,7 +8,7 @@ import re
 api = Flask(__name__)
 
 CONFIGURE_PATH = './etc/'
-DATANODES_IP = ['3.134.253.161', '18.219.181.76']
+DATANODES_IP = ['3.134.253.161', '18.219.181.76', '3.14.130.178']
 
 
 @api.route('/', methods=['GET'])

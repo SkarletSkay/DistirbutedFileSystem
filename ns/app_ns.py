@@ -62,7 +62,7 @@ def mkdir(cur_path, dir_name):
     file.write(dir_name + '\n')
     file.close()
 
-    return str(f'Success directory creation /{cur_path}@{dir_name}'), 200
+    return str(f'Success directory creation {cur_path}@{dir_name}'), 200
 
 
 @api.route('/rmdir <cur_path>,<dir_name>', methods=['POST'])
@@ -97,7 +97,7 @@ def ls(cur_path):
     file = open(f'{CONFIGURE_PATH}{cur_path}.txt')
     files = file.read().split('\n')
     file.close()
-    return f'Here list of files in /{cur_path.replace("@", "/")}: ' + str(files[:len(files) - 1])
+    return f'Here list of files in {cur_path.replace("@", "/")}: ' + str(files[:len(files) - 1])
 
 
 @api.route('/cd <cur_path>', methods=['POST'])
@@ -105,7 +105,7 @@ def cd(cur_path):
     dirs = os.listdir(CONFIGURE_PATH)
     if f'{cur_path}.txt' in dirs:
         cur_path_ = str(cur_path).replace('@', '/')
-        return f'Now you are in /{cur_path_}', 200
+        return f'Now you are in {cur_path_}', 200
     else:
         return 'No such file or directory', 404
 

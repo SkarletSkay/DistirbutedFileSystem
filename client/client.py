@@ -25,7 +25,7 @@ def file_create(file_name):
 
 
 # File read. Should allow to read any file from DFS (download a file from the DFS to the Client side).
-# Example: $readf /storage/home/Desktop test.txt
+# Example: $readf storage/home/Desktop test.txt
 # Request example: http://3.135.19.135:5000/access storage@home,image.jpg
 def file_read(file_path, file_name):
     global cur_path
@@ -131,7 +131,7 @@ def ls():
 def cd_dotdot():
     global cur_path
     if (cur_path == base_dir):
-        print('You are in /storage, there is no upper directories')
+        print('You are in storage, there is no upper directories')
         return 1
     else:
         path_arr = cur_path.split('@')
@@ -145,7 +145,7 @@ def cd_dotdot():
 def cd_empty():
     global cur_path
     cur_path = base_dir
-    print('You are in /storage.')
+    print('You are in storage.')
     return 1
 
 

@@ -137,7 +137,7 @@ def cd_dotdot():
         path_arr = cur_path.split('@')
         del path_arr[-1]
         cur_path = '@'.join(path_arr)
-        print('You are in ' + '/' + cur_path.replace('@', '/'))
+        print('You are in ' + cur_path.replace('@', '/'))
         return 1
 
 

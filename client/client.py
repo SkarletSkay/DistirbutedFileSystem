@@ -145,7 +145,7 @@ def cd_dotdot():
 def cd_empty():
     global cur_path
     cur_path = base_dir
-    print('You are in storage.')
+    print('You are in storage')
     return 1
 
 

@@ -9,6 +9,7 @@ api = Flask(__name__)
 
 CONFIGURE_PATH = './etc/'
 DATANODES_IP = ['3.134.253.161', '18.219.181.76', '3.14.130.178']
+DOWN_IP = []
 
 
 @api.route('/', methods=['GET'])
@@ -112,6 +113,8 @@ def cd(cur_path):
 
 @api.route('/createf <cur_path>,<file_name>', methods=["POST"])
 def createf(cur_path, file_name):
+    health_check()
+
     ds_ip_list_ = writef()
     ds_ip_list = ds_ip_list_.split(',')
     del ds_ip_list[-1]
@@ -123,6 +126,8 @@ def createf(cur_path, file_name):
 
 @api.route('/rmf <cur_path>,<file_name>', methods=["POST"])
 def rmf(cur_path, file_name):
+    health_check()
+
     ds_ip_list_ = writef()
     ds_ip_list = ds_ip_list_.split(',')
     del ds_ip_list[-1]
@@ -134,6 +139,8 @@ def rmf(cur_path, file_name):
 
 @api.route('/copyf <cur_path>,<file_name>,<file_copy_name>', methods=["POST"])
 def copyf(cur_path, file_name, file_copy_name):
+    health_check()
+
     ds_ip_list = access(cur_path, file_name)
     ds_ip_list = ds_ip_list.split(',')
     del ds_ip_list[-1]
@@ -146,6 +153,8 @@ def copyf(cur_path, file_name, file_copy_name):
 
 @api.route('/infof <cur_path>,<file_name>', methods=["POST"])
 def info(cur_path, file_name):
+    health_check()
+
     ds_ip_list_ = writef()
     ds_ip_list = ds_ip_list_.split(',')
     del ds_ip_list[-1]
@@ -157,6 +166,8 @@ def info(cur_path, file_name):
 
 @api.route('/writef', methods=['GET'])
 def writef():
+    health_check()
+
     AVAILABLE_HOSTS = ''
     for host in DATANODES_IP:
         hostname = host
@@ -212,6 +223,8 @@ def rm_file(dir_name, file_name):
 
 @api.route('/access <dir_name>,<file_name>', methods=['POST'])
 def access(dir_name, file_name):
+    health_check()
+
     full_file_name = f'{dir_name}@{file_name}'
     AVAILABLE_HOSTS_ = ''
     for host in DATANODES_IP:
@@ -242,6 +255,8 @@ def access(dir_name, file_name):
 
 @api.route('/mv <source_path_dir>,<file_name>,<destination_path_dir>', methods=['POST'])
 def move(source_path_dir, file_name, destination_path_dir):
+    health_check()
+
     dirs = os.listdir(CONFIGURE_PATH)
     if not f'{destination_path_dir.replace("/", "@")}.txt' in dirs:
         return f'Destination directory /{destination_path_dir.replace("@", "/")} does not exist', 404
@@ -272,6 +287,7 @@ def move(source_path_dir, file_name, destination_path_dir):
 
 @api.route('/raiseup <ip>', methods=['POST'])
 def raiseup(ip):
+    init = requests.get(f'http://{ip}:9000/init')
     AVAILABLE_HOSTS = []
     for host in DATANODES_IP:
         hostname = host
@@ -294,7 +310,39 @@ def raiseup(ip):
         file_ = file.decode('utf-8')
         file_download = requests.post(f'http://{ip_to_replicate}:9000/readf {file_}')
         file_upload = requests.post(f'http://{ip}:9000/upload {file_}', file_download)
+
     return 'Success replication', 200
+
+@api.route('/hcheck')
+def health_check():
+    AVAILABLE_HOSTS = []
+    for host in DATANODES_IP:
+        check = 0
+        hostname = host
+        response = os.system("ping -c 1 " + hostname)
+        # and then check the response...
+        if response == 0:
+            try:
+                requests.get(f'http://{host}:9000/')
+                AVAILABLE_HOSTS.append({host})
+                check = 1
+            except:
+                ConnectionError
+            if check == 0:
+                DOWN_IP.append(host)
+            pingstatus = "Server works"
+        else:
+            pingstatus = "Network Error"
+    host_ = ""
+    if len(DOWN_IP) != 0:
+        for host in AVAILABLE_HOSTS:
+            if host in DOWN_IP:
+                host_ = host
+                # requests.post(f'http://0.0.0.0/raiseup {host}')
+                raiseup(host)
+                DOWN_IP.remove(host)
+            # raiseup(host)
+    return host_
 
 
 if __name__ == "__main__":

@@ -1,3 +1,4 @@
+import json
 import os
 import shutil
 
@@ -8,7 +9,7 @@ api = Flask(__name__)
 
 CONFIGURE_PATH = './etc/'
 DATANODES_IP = os.environ["STORAGE"].split(",")
-working_nodes = []
+working_nodes = DATANODES_IP
 down_nodes = []
 
 
@@ -22,36 +23,48 @@ def init():
     health_check()
     res = {}
     for node in working_nodes:
-        res = requests.get('http://' + node + ':9000/init')
-        if len(res.json()):
+        try:
+            res = requests.get('http://' + node + ':9000/init')
+        except requests.exceptions.ConnectionError:
             working_nodes.remove(node)
             down_nodes.append(node)
-
+        else:
+            if res.status_code == 500:
+                working_nodes.remove(node)
+                down_nodes.append(node)
+            if res.json()['resp'] == 404:
+                return jsonify({'resp': 404})
     if len(working_nodes) == 0:
         return jsonify({'resp': 500})
 
     if os.path.exists(CONFIGURE_PATH):
         shutil.rmtree(CONFIGURE_PATH)
     os.mkdir(CONFIGURE_PATH)
-    return res.json()
+
+    return jsonify({'resp': 201, 'size': res.json()['size']})
 
 
 @api.route('/createf', methods=["POST"])
 def create_file():
     health_check()
-    data = request.json()
+    data = request.get_json()
     for node in working_nodes:
-        res = requests.get('http://' + node + ':9000/CreateFile', json=data)
-        if len(res.json()) == 0:
+        try:
+            res = requests.post('http://' + node + ':9000/createFile', json=data)
+        except requests.exceptions.ConnectionError:
             working_nodes.remove(node)
             down_nodes.append(node)
-        if res.json()['resp'] == 404:
-            return jsonify(res)
+        else:
+            if res.status_code == 500:
+                working_nodes.remove(node)
+                down_nodes.append(node)
+            if res.json()['resp'] == 404:
+                return jsonify({'resp': 404})
 
     if len(working_nodes) == 0:
         return jsonify({'resp': 500})
 
-    if not os.path.exists(data['path']):
+    if not os.path.exists(CONFIGURE_PATH + data['path']):
         return jsonify({'resp': 404})
 
     file = open(CONFIGURE_PATH + data['path'] + data['name'], 'w+')
@@ -63,14 +76,14 @@ def create_file():
 @api.route('/copyf', methods=['POST'])
 def copy_file():
     health_check()
-    data = request.json()
-    path = CONFIGURE_PATH + data['path']
+    data = request.get_json()
+    path = data['path']
     file = data['name']
-    if os.path.exists(path+file):
-        i = 0
+    if os.path.exists(CONFIGURE_PATH + path + file):
+        i = 1
         parts = file.rsplit('.', maxsplit=1)
         name = parts[0] + str(i) + '.' + parts[1]
-        while os.path.exists(path+name):
+        while os.path.exists(CONFIGURE_PATH + path + name):
             i = i + 1
             name = parts[0] + str(i) + '.' + parts[1]
         jdata = {'path': path, 'source': file, 'destination': name}
@@ -78,16 +91,16 @@ def copy_file():
         health_check()
 
         for node in working_nodes:
-            res = requests.get('http://' + node + ':9000/copy', json=jdata)
-            if len(res.json()) == 0:
+            res = requests.post('http://' + node + ':9000/copy', json=jdata)
+            if res.status_code == 500:
                 working_nodes.remove(node)
                 down_nodes.append(node)
             if res.json()['resp'] == 404:
-                return jsonify(res)
+                return jsonify({'resp': 404})
 
         if len(working_nodes) == 0:
             return jsonify({'resp': 500})
-        shutil.copy(path+file, path+name)
+        shutil.copy(CONFIGURE_PATH + path+file, CONFIGURE_PATH + path+name)
         return jsonify({'resp': 201})
     else:
         return jsonify({'resp': 404})
@@ -95,14 +108,20 @@ def copy_file():
 
 @api.route('/mkdir', methods=['POST'])
 def mkdir():
-    data = request.json()
+    health_check()
+    data = request.get_json()
     for node in working_nodes:
-        res = requests.get('http://' + node + ':9000/createDir', json=data)
-        if len(res.json()) == 0:
+        try:
+            res = requests.post('http://' + node + ':9000/createDir', json=data)
+        except requests.exceptions.ConnectionError:
             working_nodes.remove(node)
             down_nodes.append(node)
-        if res.json()['resp'] == 404:
-            return jsonify(res)
+        else:
+            if res.status_code == 500:
+                working_nodes.remove(node)
+                down_nodes.append(node)
+            if res.json()['resp'] == 404:
+                return jsonify({'resp': 404})
 
     if len(working_nodes) == 0:
         return jsonify({'resp': 500})
@@ -114,14 +133,19 @@ def mkdir():
 @api.route('/rmf', methods=["POST"])
 def remove_file():
     health_check()
-    data = request.json()
+    data = request.get_json()
     for node in working_nodes:
-        res = requests.get('http://' + node + ':9000/removeFile', json=data)
-        if len(res.json()) == 0:
+        try:
+            res = requests.post('http://' + node + ':9000/removeFile', json=data)
+        except requests.exceptions.ConnectionError:
             working_nodes.remove(node)
             down_nodes.append(node)
-        if res.json()['resp'] == 404:
-            return jsonify(res)
+        else:
+            if res.status_code == 500:
+                working_nodes.remove(node)
+                down_nodes.append(node)
+            if res.json()['resp'] == 404:
+                return jsonify({'resp': 404})
 
     if len(working_nodes) == 0:
         return jsonify({'resp': 500})
@@ -136,14 +160,19 @@ def remove_file():
 @api.route('/rmdir', methods=["POST"])
 def remove_dir():
     health_check()
-    data = request.json()
+    data = request.get_json()
     for node in working_nodes:
-        res = requests.get('http://' + node + ':9000/removeDir', json=data)
-        if len(res.json()) == 0:
+        try:
+            res = requests.post('http://' + node + ':9000/removeDir', json=data)
+        except requests.exceptions.ConnectionError:
             working_nodes.remove(node)
             down_nodes.append(node)
-        if res.json()['resp'] == 404:
-            return jsonify(res)
+        else:
+            if res.status_code == 500:
+                working_nodes.remove(node)
+                down_nodes.append(node)
+            if res.json()['resp'] == 404:
+                return jsonify({'resp': 404})
 
     if len(working_nodes) == 0:
         return jsonify({'resp': 500})
@@ -156,7 +185,7 @@ def remove_dir():
 
 @api.route('/ls', methods=["POST"])
 def ls():
-    data = request.json()
+    data = request.get_json()
     path = CONFIGURE_PATH + data['path']
     return jsonify({'resp': 200, 'list': os.listdir(path)})
 
@@ -164,14 +193,19 @@ def ls():
 @api.route('/mv', methods=["POST"])
 def move():
     health_check()
-    data = request.json()
+    data = request.get_json()
     for node in working_nodes:
-        res = requests.get('http://' + node + ':9000/move', json=data)
-        if len(res.json()) == 0:
+        try:
+            res = requests.post('http://' + node + ':9000/move', json=data)
+        except requests.exceptions.ConnectionError:
             working_nodes.remove(node)
             down_nodes.append(node)
-        if res.json()['resp'] == 404:
-            return jsonify(res)
+        else:
+            if res.status_code == 500:
+                working_nodes.remove(node)
+                down_nodes.append(node)
+            if res.json()['resp'] == 404:
+                return jsonify({'resp': 404})
 
     if len(working_nodes) == 0:
         return jsonify({'resp': 500})
@@ -188,20 +222,30 @@ def move():
 @api.route('/info', methods=["POST"])
 def info():
     health_check()
-    data = request.json()
+    data = request.get_json()
     res = 0
     for node in working_nodes:
-        res = requests.get('http://' + node + ':9000/info', json=data)
-        if len(res.json()) == 0:
+        try:
+            res = requests.post('http://' + node + ':9000/info', json=data)
+        except requests.exceptions.ConnectionError:
             working_nodes.remove(node)
             down_nodes.append(node)
-        if res.json()['resp'] == 404:
-            return jsonify(res)
+        else:
+            if res.status_code == 500:
+                working_nodes.remove(node)
+                down_nodes.append(node)
+            if res.json()['resp'] == 404:
+                return jsonify({'resp': 404})
 
     if len(working_nodes) == 0:
         return jsonify({'resp': 500})
 
-    return res
+    response = {'resp': 200,
+                'size': res.json()['size'],
+                'access': res.json()['access'],
+                'modified': res.json()['modified'],
+                'change': res.json()['change']}
+    return jsonify(response)
 
 
 @api.route('/access', methods=['GET'])
@@ -212,49 +256,88 @@ def access():
     return jsonify({'resp': 200, 'server': working_nodes[0]})
 
 
-@api.route('/writeFile', methods=['GET'])
+@api.route('/writeFile', methods=['POST'])
 def write_file():
     health_check()
-    data = request.json()
-    res = access()
-    if res.json()['resp'] == 200:
-        file = open(CONFIGURE_PATH + data['path'], 'w+')
-        file.close()
-    return res
+    data = request.get_json()
+    for node in working_nodes:
+        try:
+            res = requests.post('http://' + node + ':9000/writeFile', json=data)
+        except requests.exceptions.ConnectionError:
+            working_nodes.remove(node)
+            down_nodes.append(node)
+        else:
+            if res.status_code == 500:
+                working_nodes.remove(node)
+                down_nodes.append(node)
+            else:
+                if res.json()['resp'] == 404:
+                    return jsonify({'resp': 404})
+
+    if len(working_nodes) == 0:
+        return jsonify({'resp': 500})
+
+    path = data['path'].rsplit('/', maxsplit=1)
+    p = ""
+    if len(path) > 1:
+        p = path[0]
+        os.makedirs(CONFIGURE_PATH + p)
+    if not os.path.exists(CONFIGURE_PATH + p):
+        return jsonify({'resp': 404})
+
+    file = open(CONFIGURE_PATH + data['path'], 'w+')
+    file.close()
+
+    return jsonify({'resp': 201})
 
 
 def health_check():
     for node in working_nodes:
-        res = requests.get('http://' + node + ':9000/heartbeat')
-        if res != 200:
+        try:
+            res = requests.get('http://' + node + ':9000/heartbeat')
+        except requests.exceptions.ConnectionError:
             working_nodes.remove(node)
             down_nodes.append(node)
+            return 500
+        else:
+            if res.status_code != 200:
+                working_nodes.remove(node)
+                down_nodes.append(node)
     for node in down_nodes:
-        res = requests.get('http://' + node + ':9000/info')
-        if res == 200:
-            working_nodes.append(node)
-            down_nodes.remove(node)
+        try:
+            res = requests.get('http://' + node + ':9000/heartbeat')
+        except requests.exceptions.ConnectionError:
+            return 500
+        else:
+            if res.status_code == 200:
+                working_nodes.append(node)
+                down_nodes.remove(node)
+                update_data(node)
 
 
 def update_data(node):
-    unchecked = [CONFIGURE_PATH]
+    unchecked = []
     files = []
     leaves = []
 
+    unchecked.extend(os.listdir(CONFIGURE_PATH))
     while len(unchecked) > 0:
         tmp = unchecked.pop()
-        listed = os.listdir(tmp)
-        is_leaf = True
-        for t in listed:
-            if os.path.isdir(t):
-                is_leaf = False
-                unchecked.append(tmp + t + "/")
-            else:
-                files.append(tmp + t)
-        if is_leaf:
-            leaves.append(tmp)
-    data = {'dirs': leaves, 'files': files, 'server': node}
-    res = requests.get('http://' + node + ':9000/recovery', jsonify(data))
+        if os.path.isdir(CONFIGURE_PATH + tmp):
+            listed = os.listdir(CONFIGURE_PATH + tmp)
+            is_leaf = True
+            for t in listed:
+                if os.path.isdir(CONFIGURE_PATH + tmp + "/" + t):
+                    is_leaf = False
+                    unchecked.append(tmp + "/" + t)
+                else:
+                    files.append(tmp + "/" + t)
+            if is_leaf:
+                leaves.append(tmp)
+        else:
+            files.append(tmp)
+    d = {'dirs': leaves, 'files': files, 'server': working_nodes[0]}
+    res = requests.post('http://' + node + ':9000/recovery', json=json.loads(json.dumps(d)))
     return res
 
 

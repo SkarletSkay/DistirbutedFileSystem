@@ -1,3 +1,5 @@
+import codecs
+import json
 import os
 import shutil
 
@@ -26,10 +28,10 @@ def init():
 
 @api.route('/createFile', methods=["POST"])
 def create_file():
-    data = request.json()
+    data = request.get_json()
     dir_name = data['path']
     filename = data['name']
-    if os.path.exists(dir_name):
+    if os.path.exists(CONFIGURE_PATH + dir_name):
         file = open(CONFIGURE_PATH+dir_name+filename, 'w+')
         file.close()
         return jsonify({'resp': 200})
@@ -39,7 +41,7 @@ def create_file():
 
 @api.route('/createDir', methods=["POST"])
 def create_dir():
-    data = request.json()
+    data = request.get_json()
     path = data['path']
     os.makedirs(CONFIGURE_PATH + path)
     return jsonify({'resp': 201})
@@ -47,10 +49,10 @@ def create_dir():
 
 @api.route('/move', methods=['POST'])
 def move_file():
-    data = request.json()
+    data = request.get_json()
     source = CONFIGURE_PATH + data['source']
     dir_destination = CONFIGURE_PATH + data['dir_destination']
-    destination = CONFIGURE_PATH + data['destination']
+    destination = data['destination']
     if os.path.exists(dir_destination) or os.path.exists(source):
         os.rename(source, dir_destination+destination)
         return jsonify({'resp': 200})
@@ -60,22 +62,23 @@ def move_file():
 
 @api.route('/readFile', methods=['POST'])
 def read_file():
-    data = request.json()
+    data = request.get_json()
     path = data['path']
-    if os.path.exists(CONFIGURE_PATH+path):
+    if not os.path.exists(CONFIGURE_PATH+path):
         return jsonify({'resp': 404})
     file = open(CONFIGURE_PATH + path, 'rb')
     b = file.read()
     file.close()
-    return jsonify({'resp': 200, 'data': b})
+    return b
 
 
 @api.route('/writeFile', methods=['POST'])
 def write_file():
-    data = request.json()
-    path = data['path']
+    info = request.get_json()
+    path = info['path']
     file = open(CONFIGURE_PATH + path, 'wb')
-    file.write(request.data['data'])
+
+    file.write(codecs.latin_1_decode(info['cont'])[0])
     file.close()
     return jsonify({'resp': 201})
 
@@ -87,7 +90,7 @@ def heartbeat():
 
 @api.route('/info', methods=['POST'])
 def file_info():
-    data = request.json()
+    data = request.get_json()
     path = data['path']
 
     if os.path.exists(CONFIGURE_PATH + path):
@@ -104,7 +107,7 @@ def file_info():
 
 @api.route('/list', methods=['POST'])
 def ls():
-    data = request.json()
+    data = request.get_json()
     path = data['path']
     if os.path.exists(CONFIGURE_PATH+path):
         response = os.listdir(CONFIGURE_PATH+path)
@@ -115,7 +118,7 @@ def ls():
 
 @api.route('/removeFile', methods=['POST'])
 def remove_file():
-    data = request.json()
+    data = request.get_json()
     path = CONFIGURE_PATH + data['path']
     if os.path.exists(path):
         os.remove(path)
@@ -124,9 +127,9 @@ def remove_file():
         return jsonify({'resp': 404})
 
 
-@api.route('/removeDirectory', methods=['POST'])
+@api.route('/removeDir', methods=['POST'])
 def remove_dir():
-    data = request.json()
+    data = request.get_json()
     path = CONFIGURE_PATH + data['path']
     if os.path.exists(path):
         shutil.rmtree(path)
@@ -148,27 +151,26 @@ def recover_file(file_path, data):
 @api.route('/recovery', methods=['POST'])
 def recovery():
     init()
-    data = request.json()
+    data = request.get_json()
     server = data['server']
     dirs = data['dirs']
     files = data['files']
-
     for d in dirs:
         dir_create(d)
     for f in files:
-        data = requests.get('http://' + server + ':9000/readFile', json=jsonify({'path': f}))
-        recover_file(f, data)
-    return jsonify({'resp: 201'})
+        data = requests.get('http://' + server + ':9000/readFile', json=json.loads(json.dumps({'path': f})))
+        recover_file(f, data.content)
+    return jsonify({'resp': 201})
 
 
 @api.route('/copy', methods=['POST'])
 def copy():
-    data = request.json()
+    data = request.get_json()
     path = CONFIGURE_PATH + data['path']
-    source = CONFIGURE_PATH + data['source']
+    source = data['source']
     destination = data['destination']
 
-    if os.path.exists(path+source):
+    if os.path.exists(path + source):
         shutil.copy(path + source, path + destination)
         return jsonify({'resp': 201})
     else:

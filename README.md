@@ -35,7 +35,7 @@ writef test.txt - Upload file 'test.txt' to server
 rmf test.txt - Delete file 'test.txt'
 copyf test.txt - Copy 'test.txt'
 infof test.txt - Get info about file 'test.txt'
-mvf test.txt storage/home - Move file 'test.txt' to 'storage/home'
+mvf t/test.txt /home/t.txt - Move file 't/test.txt' to 'home/t.txt'
 cd home - Open directory '/home'
 cd.. - Open up directory 
 cd - Open root directory 
@@ -49,31 +49,31 @@ exit - Exit from program
 ```
 '/ methods=['GET']'
 '/init methods=['GET']'
-'/mkdir <dir_name>, methods=["POST"]'
-'/rmdir <dir_name>, methods=["POST"]'
-'/ls methods=["POST"]'
-'/createf <file_name>', methods=["POST"])
-'/rmf <file_name>', methods=["POST"])
-'/copyf <file_name>, methods=["POST"])
-'/infof <file_name>', methods=["POST"])
-'/writeFile <file_name>, methods=["POST"]'
-'/rmf <file_name>, methods=["POST"]'
-'/access <file_name>, methods=['GET']'
-'/mv <source_file>,<destination_path_dir>, methods=["POST"]'
+'/mkdir <dir_name>  -> methods=["POST"]'
+'/rmdir <dir_name> -> methods=["POST"]'
+'/ls <path>  -> methods=["POST"]'
+'/createf <file_name>' -> methods=["POST"])
+'/rmf <file_name>' -> methods=["POST"])
+'/copyf <file_name> -> methods=["POST"])
+'/infof <file_name>'  -> methods=["POST"])
+'/writeFile <file_name> -> methods=["POST"]'
+'/rmf <file_name> -> methods=["POST"]'
+'/access methods=['GET']'
+'/mv <source_file>,<destination_path_dir>  -> methods=["POST"]'
 ```
 
 **Storage:**
 ```
 '/ methods=['GET']'
 '/init methods=['GET']'
-'/readf <file_path>, methods=["POST"]'
-'/ls <file_path>, methods=["POST"]'
-'/createf <dir_name>,<filename>, methods=["POST"]'
-'/writeFile <file_path>, methods=["POST"]'
-'/writef <dir_name>,<filename>'
-'/removeFile <file_path>, methods=["POST"]'
-'/info <file_path>, methods=["POST"]'
-'/copy <filename_source>,<filename_copy>,<current_path>, methods=["POST"]'
+'/readf <file_path> -> methods=["POST"]'
+'/ls <file_path> -> methods=["POST"]'
+'/createf <dir_name>,<filename> -> methods=["POST"]'
+'/writeFile <file_path> -> methods=["POST"]'
+'/writef <dir_name>,<filename>' -> methods=["POST"]'
+'/removeFile <file_path> ->  methods=["POST"]'
+'/info <file_path> -> methods=["POST"]'
+'/copy <filename_source>,<filename_copy>,<current_path>  -> methods=["POST"]'
 '/heartbeat methods=['GET']
-'/recovery <ip_server>, <dirs>, <file_names> methods=['POST']
+'/recovery <ip_server>, <dirs>, <file_names>  -> methods=['POST']
 ```

@@ -6,7 +6,7 @@
 ## Installation
 **Name Server + Storages:**
 ```
-docker swarn init
+docker swarm init
 ```
 <i>Use given command for joining datanodes</i>
 ```

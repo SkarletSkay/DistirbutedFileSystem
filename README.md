@@ -10,6 +10,9 @@ docker swarn init
 ```
 <i>Use given command for joining datanodes</i>
 ```
+docker node update --availability drain node-1
+```
+```
 docker service create --name (name) --replicas (numOfDN) --host nameserver:(nameser_ip)  --publish 9000:9000 skab/dfs1_dn
 ```
 ```

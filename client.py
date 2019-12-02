@@ -6,7 +6,7 @@ import requests
 import datetime
 base_dir = './storage/'
 sub_dir = []
-ns_ip = 'http://3.135.19.135:5000'
+ns_ip = 'http://nameserver:5000'
 
 def get_path():
     path = ""

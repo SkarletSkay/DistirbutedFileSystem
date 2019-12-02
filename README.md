@@ -30,10 +30,10 @@ Architecture
 ```
 init - Initialization
 createf test.txt - Create file with name 'test.txt'
-readf storage/home/Desktop test.txt - Download file 'test.txt' from server
+readf test.txt - Download file 'test.txt' from server
 writef test.txt - Upload file 'test.txt' to server
 rmf test.txt - Delete file 'test.txt'
-copyf test.txt storage/home - Copy 'test.txt'
+copyf test.txt - Copy 'test.txt'
 infof test.txt - Get info about file 'test.txt'
 mvf test.txt storage/home - Move file 'test.txt' to 'storage/home'
 cd home - Open directory '/home'
@@ -47,35 +47,33 @@ exit - Exit from program
 
 **Nameserver:**
 ```
-'/init'
-'/mkdir <cur_path>,<dir_name>'
-'/rmdir <cur_path>,<dir_name>'
-'/ls <cur_path>'
-'/cd <cur_path>'
-'/createf <cur_path>,<file_name>', methods=["POST"])
-'/rmf <cur_path>,<file_name>', methods=["POST"])
-'/copyf <cur_path>,<file_name>,<file_copy_name>', methods=["POST"])
-'/infof <cur_path>,<file_name>', methods=["POST"])
-'/writef'
-'/add_file <dir_name>,<file_name>'
-'/rm_file <dir_name>,<file_name>'
-'/access <dir_name>,<file_name>'
-'/mv <source_path_dir>,<source_path_file>,<destination_path_dir>'
-'/raiseup <ip>'
+'/ methods=['GET']'
+'/init methods=['GET']'
+'/mkdir <dir_name>, methods=["POST"]'
+'/rmdir <dir_name>, methods=["POST"]'
+'/ls methods=["POST"]'
+'/createf <file_name>', methods=["POST"])
+'/rmf <file_name>', methods=["POST"])
+'/copyf <file_name>, methods=["POST"])
+'/infof <file_name>', methods=["POST"])
+'/writeFile <file_name>, methods=["POST"]'
+'/rmf <file_name>, methods=["POST"]'
+'/access <file_name>, methods=['GET']'
+'/mv <source_file>,<destination_path_dir>, methods=["POST"]'
 ```
 
 **Storage:**
 ```
-'/'
-'/init'
-'/readf <file_name>'
-'/ls'
-'/createf <dir_name>,<filename>'
-'/upload <filename>'
+'/ methods=['GET']'
+'/init methods=['GET']'
+'/readf <file_path>, methods=["POST"]'
+'/ls <file_path>, methods=["POST"]'
+'/createf <dir_name>,<filename>, methods=["POST"]'
+'/writeFile <file_path>, methods=["POST"]'
 '/writef <dir_name>,<filename>'
-'/find <filename>'
-'/rm <dir_name>,<filename>'
-'/info <filename>'
-'/copy <filename_source>,<filename_copy>,<current_path>'
-'/rename <old_name>,<new_name>'
+'/removeFile <file_path>, methods=["POST"]'
+'/info <file_path>, methods=["POST"]'
+'/copy <filename_source>,<filename_copy>,<current_path>, methods=["POST"]'
+'/heartbeat methods=['GET']
+'/recovery <ip_server>, <dirs>, <file_names> methods=['POST']
 ```

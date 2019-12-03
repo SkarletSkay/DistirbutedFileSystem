@@ -13,7 +13,7 @@ docker swarm init
 docker node update --availability drain (node-1)
 ```
 ```
-docker service create --name (name) --replicas (numOfDN) --host nameserver:(nameser_ip)  --publish 9000:9000 skab/dfs2_dn
+docker service create --name (name) --mode global --host nameserver:(nameser_ip)  --publish 9000:9000 skab/dfs2_dn
 ```
 ```
 docker run --env STORAGE="(storage_ip1),(storage_ip2)" -p 5000:5000 skab/dfs2_ns
